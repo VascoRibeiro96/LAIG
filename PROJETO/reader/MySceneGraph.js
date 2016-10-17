@@ -284,6 +284,30 @@ MySceneGraph.prototype.parseMaterials= function (transformations) {
 		return "Either zero or more than one 'materials' element found.";
 	}
 
+	var material = elems[0].getElementsByTagName('material');
+	var ids = [];	
+	this.material = []; 
+	
+	for(int i = 0; i < material.length; ++i){
+		var curMaterial = material[i];
+
+		var id = curMaterial.attributes.getNamedItem('id').value;
+		ids[i] = id;
+		
+		var emission = curMaterial.attributes.getNamedItem('emission').value;
+		var ambient = curMaterial.attributes.getNamedItem('ambient').value;
+		var diffuse = curMaterial.attributes.getNamedItem('diffuse').value;
+		var specular = curMaterial.attributes.getNamedItem('specular').value;
+		var shininess = curMaterial.attributes.getNamedItem('shininess').value;
+		
+		curMaterial = [id, file, length_s, length_t];
+		this.material.push(curMaterial);
+	}
+	
+	if(compareIds(ids) == "Equal Ids"){
+		console.log("Equal Ids in transformations!\n");
+		return "Equal Ids";
+	}
 
 }
 
