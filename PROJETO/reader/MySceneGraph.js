@@ -165,7 +165,8 @@ MySceneGraph.prototype.parseIllumination= function (transformations) {
 	var local = elems.attributes.getNamedItem('local').value;
 	var ambient = elems.attributes.getNamedItem('ambient').value;
 	var background = elems.attributes.getNamedItem('background').value;
-
+	
+	this.illumination = [doublesided, local, ambient, background];
 }
 
 MySceneGraph.prototype.parseLights= function (illumination) {
@@ -218,7 +219,7 @@ MySceneGraph.prototype.parseLights= function (illumination) {
 		var diffuse = curSpot.attributes.getNamedItem('diffuse').value;
 		var specular = curSpot.attributes.getNamedItem('specular').value;
 		
-		curSpot = [id, enabled, location, ambient, diffuse, specular];
+		curSpot = [id, enabled, ,angle, exponent, target, location, ambient, diffuse, specular];
 		this.spot.push(curSpot);
 	}
 	
@@ -246,6 +247,28 @@ MySceneGraph.prototype.parseTextures= function (primitives) {
 		return "Either zero or more than one 'textures' element found.";
 	}
 
+	var texture = elems[0].getElementsByTagName('texture');
+	var ids = [];	
+	this.texture = []; 
+	
+	for(int i = 0; i < texture.length; ++i){
+		var curTexture = texture[i];
+
+		var id = curTexture.attributes.getNamedItem('id').value;
+		ids[i] = id;
+		
+		var file = curTexture.attributes.getNamedItem('file').value;
+		var length_s = curTexture.attributes.getNamedItem('length_s').value;
+		var length_t = curTexture.attributes.getNamedItem('length_t').value;
+		
+		curTexture = [id, file, length_s, length_t];
+		this.texture.push(curTexture);
+	}
+	
+	if(compareIds(ids) == "Equal Ids"){
+		console.log("Equal Ids in transformations!\n");
+		return "Equal Ids";
+	}
 
 }
 
