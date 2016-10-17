@@ -125,7 +125,7 @@ MySceneGraph.prototype.parseView= function (primitives) {
 	
 	var perspective = elems[0].getElementsByTagName('perspective');
 	var ids = [];	
-	this.perspectives = [] 
+	this.perspectives = []; 
 	
 	for(int i = 0; i < perspective.length; ++i){
 		var curPerspective = perspective[i];
@@ -139,7 +139,7 @@ MySceneGraph.prototype.parseView= function (primitives) {
 		var from = curPerspective.attributes.getNamedItem('from').value;
 		var to = curPerspective.attributes.getNamedItem('to').value;
 		
-		curPerspective = [near, far, angle, from, to];
+		curPerspective = [id, near, far, angle, from, to];
 		this.perspectives.push(curPerspective);
 	}
 	
@@ -178,6 +178,58 @@ MySceneGraph.prototype.parseLights= function (illumination) {
 
 	if (elems.length != 1) {
 		return "Either zero or more than one 'lights' element found.";
+	}
+	
+	var omni = elems[0].getElementsByTagName('omni');
+	var spot = elems[0].getElementsByTagName('spot');
+	var idsomni = [];
+	var idsspot = [];
+	this.omni = []; 
+	this.spot = [];
+	
+	for(int i = 0; i < omni.length; ++i){
+		var curOmni = omni[i];
+
+		var id = curOmni.attributes.getNamedItem('id').value;
+		idsomni[i] = id;
+		
+		var enabled = curOmni.attributes.getNamedItem('enabled').value;
+		var location = curOmni.attributes.getNamedItem('location').value;
+		var ambient = curOmni.attributes.getNamedItem('ambient').value;
+		var diffuse = curOmni.attributes.getNamedItem('diffuse').value;
+		var specular = curOmni.attributes.getNamedItem('specular').value;
+		
+		curOmni = [id, enabled, location, ambient, diffuse, specular];
+		this.omni.push(curOmni);
+	}
+	
+	for(int i = 0; i < spot.length; ++i){
+		var curSpot = spot[i];
+
+		var id = curSpot.attributes.getNamedItem('id').value;
+		idsspot[i] = id;
+		
+		var enabled = curcurSpot.attributes.getNamedItem('enabled').value;
+		var angle = curSpot.attributes.getNamedItem('angle').value;
+		var exponent = curSpot.attributes.getNamedItem('exponent').value;
+		var target = curSpot.attributes.getNamedItem('target').value;
+		var location = curSpot.attributes.getNamedItem('location').value;
+		var ambient = curSpot.attributes.getNamedItem('ambient').value;
+		var diffuse = curSpot.attributes.getNamedItem('diffuse').value;
+		var specular = curSpot.attributes.getNamedItem('specular').value;
+		
+		curSpot = [id, enabled, location, ambient, diffuse, specular];
+		this.spot.push(curSpot);
+	}
+	
+	if(compareIds(idsomni) == "Equal Ids"){
+		console.log("Equal Ids in transformations!\n");
+		return "Equal Ids";
+	}
+	
+	if(compareIds(idsspot) == "Equal Ids"){
+		console.log("Equal Ids in transformations!\n");
+		return "Equal Ids";
 	}
 
 }
