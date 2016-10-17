@@ -116,11 +116,11 @@ MySceneGraph.prototype.parseView= function (primitives) {
 	var elems =  rootElement.getElementsByTagName('views');
 
 	if (elems == null) {
-		return "'view' element is missing.";
+		return "'views' element is missing.";
 	}
 
 	if (elems.length != 1) {
-		return "Either zero or more than one 'view' element found.";
+		return "Either zero or more than one 'views' element found.";
 	}
 	
 	var perspective = elems[0].getElementsByTagName('perspective');
