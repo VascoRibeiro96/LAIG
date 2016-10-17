@@ -125,6 +125,7 @@ MySceneGraph.prototype.parseView= function (primitives) {
 	
 	var perspective = elems[0].getElementsByTagName('perspective');
 	var ids = [];	
+	this.perspectives = [] 
 	
 	for(int i = 0; i < perspective.length; ++i){
 		var curPerspective = perspective[i];
@@ -138,6 +139,8 @@ MySceneGraph.prototype.parseView= function (primitives) {
 		var from = curPerspective.attributes.getNamedItem('from').value;
 		var to = curPerspective.attributes.getNamedItem('to').value;
 		
+		curPerspective = [near, far, angle, from, to];
+		this.perspectives.push(curPerspective);
 	}
 	
 	if(compareIds(ids) == "Equal Ids"){
@@ -157,6 +160,11 @@ MySceneGraph.prototype.parseIllumination= function (transformations) {
 	if (elems.length != 1) {
 		return "Either zero or more than one 'illumination' element found.";
 	}
+	
+	var doublesided = elems.attributes.getNamedItem('doublesided').value;
+	var local = elems.attributes.getNamedItem('local').value;
+	var ambient = elems.attributes.getNamedItem('ambient').value;
+	var background = elems.attributes.getNamedItem('background').value;
 
 }
 
