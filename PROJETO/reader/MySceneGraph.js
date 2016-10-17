@@ -113,7 +113,7 @@ MySceneGraph.prototype.parseScene= function(rootElement) {
 
 MySceneGraph.prototype.parseView= function (primitives) {
 	
-	var elems =  rootElement.getElementsByTagName('view');
+	var elems =  rootElement.getElementsByTagName('views');
 
 	if (elems == null) {
 		return "'view' element is missing.";
@@ -122,7 +122,28 @@ MySceneGraph.prototype.parseView= function (primitives) {
 	if (elems.length != 1) {
 		return "Either zero or more than one 'view' element found.";
 	}
+	
+	var perspective = elems[0].getElementsByTagName('perspective');
+	var ids = [];	
+	
+	for(int i = 0; i < perspective.length; ++i){
+		var curPerspective = perspective[i];
 
+		var id = curPerspective.attributes.getNamedItem('id').value;
+		ids[i] = id;
+		
+		var near = curPerspective.attributes.getNamedItem('near').value;
+		var far = curPerspective.attributes.getNamedItem('far').value;
+		var angle = curPerspective.attributes.getNamedItem('angle').value;
+		var from = curPerspective.attributes.getNamedItem('from').value;
+		var to = curPerspective.attributes.getNamedItem('to').value;
+		
+	}
+	
+	if(compareIds(ids) == "Equal Ids"){
+		console.log("Equal Ids in transformations!\n");
+		return "Equal Ids";
+	}
 }
 
 MySceneGraph.prototype.parseIllumination= function (transformations) {
