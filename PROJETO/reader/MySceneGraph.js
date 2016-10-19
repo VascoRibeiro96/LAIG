@@ -1,3 +1,13 @@
+this.transformations = [];
+this.perspectives = [];
+this.illumination = [];
+this.lights = [];
+this.textures = [];
+this.materials = [];
+this.transformations = [];
+this.primitives = [];
+this.components = [];
+
 
 function MySceneGraph(filename, scene) {
 	this.loadedOk = null;
@@ -82,27 +92,6 @@ MySceneGraph.prototype.parseScene= function(rootElement) {
 	console.log("Scene read from file: {Root=" + this.root + ", Axis-length=" + this.axis_length +"}");
 
 	return "All done!";
-
-	/*
-	var tempList=rootElement.getElementsByTagName('list');
-
-	if (tempList == null  || tempList.length==0) {
-		return "list element is missing.";
-	}
-	
-	this.list=[];
-	// iterate over every element
-	var nnodes=tempList[0].children.length;
-	for (var i=0; i< nnodes; i++)
-	{
-		var e=tempList[0].children[i];
-
-		// process each element and store its information
-		this.list[e.id]=e.attributes.getNamedItem("coords").value;
-		console.log("Read list item id "+ e.id+" with value "+this.list[e.id]);
-	}; 
-	*/
-
 };
 
 
@@ -120,7 +109,6 @@ MySceneGraph.prototype.parseView= function (primitives) {
 	
 	var perspective = elems[0].getElementsByTagName('perspective');
 	var ids = [];	
-	this.perspectives = []; 
 	
 	for(int i = 0; i < perspective.length; ++i){
 		var curPerspective = perspective[i];
@@ -178,16 +166,16 @@ MySceneGraph.prototype.parseLights= function (illumination) {
 	
 	var omni = elems[0].getElementsByTagName('omni');
 	var spot = elems[0].getElementsByTagName('spot');
-	var idsomni = [];
-	var idsspot = [];
-	this.omni = []; 
-	this.spot = [];
+	var idsOmni = [];
+	var idsSpot = [];
+	var omni = []; 
+	var spot = [];
 	
 	for(int i = 0; i < omni.length; ++i){
 		var curOmni = omni[i];
 
 		var id = curOmni.attributes.getNamedItem('id').value;
-		idsomni[i] = id;
+		idsOmni[i] = id;
 		
 		var enabled = curOmni.attributes.getNamedItem('enabled').value;
 		var location = curOmni.attributes.getNamedItem('location').value;
@@ -196,14 +184,14 @@ MySceneGraph.prototype.parseLights= function (illumination) {
 		var specular = curOmni.attributes.getNamedItem('specular').value;
 		
 		curOmni = [id, enabled, location, ambient, diffuse, specular];
-		this.omni.push(curOmni);
+		omni.push(curOmni);
 	}
 	
 	for(int i = 0; i < spot.length; ++i){
 		var curSpot = spot[i];
 
 		var id = curSpot.attributes.getNamedItem('id').value;
-		idsspot[i] = id;
+		idsSpot[i] = id;
 		
 		var enabled = curcurSpot.attributes.getNamedItem('enabled').value;
 		var angle = curSpot.attributes.getNamedItem('angle').value;
@@ -215,15 +203,17 @@ MySceneGraph.prototype.parseLights= function (illumination) {
 		var specular = curSpot.attributes.getNamedItem('specular').value;
 		
 		curSpot = [id, enabled, ,angle, exponent, target, location, ambient, diffuse, specular];
-		this.spot.push(curSpot);
+		spot.push(curSpot);
 	}
+
+	this.lights = [omni, spot];
 	
-	if(compareIds(idsomni) == "Equal Ids"){
+	if(compareIds(idsOmni) == "Equal Ids"){
 		console.log("Equal Ids in transformations!\n");
 		return "Equal Ids";
 	}
 	
-	if(compareIds(idsspot) == "Equal Ids"){
+	if(compareIds(idsSpot) == "Equal Ids"){
 		console.log("Equal Ids in transformations!\n");
 		return "Equal Ids";
 	}
@@ -244,7 +234,6 @@ MySceneGraph.prototype.parseTextures= function (primitives) {
 
 	var texture = elems[0].getElementsByTagName('texture');
 	var ids = [];	
-	this.texture = []; 
 	
 	for(int i = 0; i < texture.length; ++i){
 		var curTexture = texture[i];
@@ -257,7 +246,7 @@ MySceneGraph.prototype.parseTextures= function (primitives) {
 		var length_t = curTexture.attributes.getNamedItem('length_t').value;
 		
 		curTexture = [id, file, length_s, length_t];
-		this.texture.push(curTexture);
+		this.textures.push(curTexture);
 	}
 	
 	if(compareIds(ids) == "Equal Ids"){
@@ -281,7 +270,6 @@ MySceneGraph.prototype.parseMaterials= function (transformations) {
 
 	var material = elems[0].getElementsByTagName('material');
 	var ids = [];	
-	this.material = []; 
 	
 	for(int i = 0; i < material.length; ++i){
 		var curMaterial = material[i];
@@ -296,7 +284,7 @@ MySceneGraph.prototype.parseMaterials= function (transformations) {
 		var shininess = curMaterial.attributes.getNamedItem('shininess').value;
 		
 		curMaterial = [id, file, length_s, length_t];
-		this.material.push(curMaterial);
+		this.materials.push(curMaterial);
 	}
 	
 	if(compareIds(ids) == "Equal Ids"){
@@ -320,7 +308,6 @@ MySceneGraph.prototype.parseTransformations= function (illumination) {
 
 	var transformationsElems = elems[0].getElementsByTagName('transformation');
 	var ids = [];
-	this.transformations = [];
 
 	for(int i = 0; i < transformationsElems.length; ++i){
 		var curTransformation = transformationsElems[i];
@@ -406,83 +393,67 @@ MySceneGraph.prototype.parsePrimitives= function (primitives) {
 		var id = curPrimitive.attributes.getNamedItem('id');
 		ids[i] = id;
 
-		var rectangle = curPrimitive.getElementsByTagName('rectangle');
+		var primitiveChild = curPrimitive.childNodes;
+		var primitiveValues = [];
 
-		if(rectangle.length > 1){
-			console.log("More than one rectangle in a primitive!\n")
-			return "More than one rectangle in a primitive";
-		}
-		else if(rectangle.length == 1){ //if no rectangle tags are found, do nothing
-			var rect = [];
-			var x1 = rectangle[0].attributes.getNamedItem('x1').value;
-			var y1 = rectangle[0].attributes.getNamedItem('y1').value;
-			var x2 = rectangle[0].attributes.getNamedItem('x2').value;
-			var y2 = rectangle[0].attributes.getNamedItem('y2').value;
+		if(primitiveChild != 1){
+			return "There must be one and only one element inside each primitive";
 		}
 
-		var triangle = curPrimitive.getElementsByTagName('triangle');
+		var type = primitiveChild[0].tagName;
 
-		if(triangle.length > 1){
-			console.log("More than one triangle in a primitive!\n")
-			return "More than one triangle in a primitive";
-		}
-		else if(triangle.length == 1){ //if no triangle tags are found, do nothing
-			var tri = [];
-			var x1 = triangle[0].attributes.getNamedItem('x1').value;
-			var y1 = triangle[0].attributes.getNamedItem('y1').value;
-			var z1 = triangle[0].attributes.getNamedItem('z1').value;
-			var x2 = triangle[0].attributes.getNamedItem('x2').value;
-			var y2 = triangle[0].attributes.getNamedItem('y2').value;
-			var z2 = triangle[0].attributes.getNamedItem('z2').value;
-			var x3 = triangle[0].attributes.getNamedItem('x3').value;
-			var y3 = triangle[0].attributes.getNamedItem('y3').value;
-			var z3 = triangle[0].attributes.getNamedItem('z3').value;
-		}
+		switch(type){
+			case 'rectangle':
+				var x1 = primitiveChild[0].attributes.getNamedItem('x1').value;
+				var y1 = primitiveChild[0].attributes.getNamedItem('y1').value;
+				var x2 = primitiveChild[0].attributes.getNamedItem('x2').value;
+				var y2 = primitiveChild[0].attributes.getNamedItem('y2').value;
+				primitiveValues = [type, x1, y1, x2, y2];
+				break;
 
-		var cylinder = curPrimitive.getElementsByTagName('cylinder');
+			case 'triangle':
+				var x1 = primitiveChild[0].attributes.getNamedItem('x1').value;
+				var y1 = primitiveChild[0].attributes.getNamedItem('y1').value;
+				var z1 = primitiveChild[0].attributes.getNamedItem('z1').value;
+				var x2 = primitiveChild[0].attributes.getNamedItem('x2').value;
+				var y2 = primitiveChild[0].attributes.getNamedItem('y2').value;
+				var z2 = primitiveChild[0].attributes.getNamedItem('z2').value;
+				var x3 = primitiveChild[0].attributes.getNamedItem('x3').value;
+				var y3 = primitiveChild[0].attributes.getNamedItem('y3').value;
+				var z3 = primitiveChild[0].attributes.getNamedItem('z3').value; 
+				primitiveValues = [type, x1, y1, z1, x2, y2, z2, x3, y3, z3];
+				break;
 
-		if(cylinder.length > 1){
-			console.log("More than one cylinder in a primitive!\n")
-			return "More than one cylinder in a primitive";
-		}
-		else if(cylinder.length == 1){ //if no cylinder tags are found, do nothing
-			var rect = [];
-			var base = cylinder[0].attributes.getNamedItem('base').value;
-			var top = cylinder[0].attributes.getNamedItem('top').value;
-			var height = cylinder[0].attributes.getNamedItem('height').value;
-			var slices = cylinder[0].attributes.getNamedItem('slices').value;
-			var stacks = cylinder[0].attributes.getNamedItem('stacks').value;
+			case 'cylinder':
+				var base = primitiveChild[0].attributes.getNamedItem('base').value;
+				var top = primitiveChild[0].attributes.getNamedItem('top').value;
+				var height = primitiveChild[0].attributes.getNamedItem('height').value;
+				var slices = primitiveChild[0].attributes.getNamedItem('slices').value;
+				var stacks = primitiveChild[0].attributes.getNamedItem('stacks').value;
+				primitiveValues = [type, base, top, height, slices, stacks];
+				break;
 
-		}
+			case 'sphere':
+				var radius = primitiveChild[0].attributes.getNamedItem('radius').value;
+				var slices = primitiveChild[0].attributes.getNamedItem('slices').value;
+				var stacks = primitiveChild[0].attributes.getNamedItem('stacks').value;
+				primitiveValues = [type, radius, slices, stacks];
+				break;
 
-		var sphere = curPrimitive.getElementsByTagName('sphere');
+			case 'torus':
+				var inner = primitiveChild[0].attributes.getNamedItem('inner').value;
+				var outer = primitiveChild[0].attributes.getNamedItem('outer').value;
+				var slices = primitiveChild[0].attributes.getNamedItem('slices').value;
+				var loops = primitiveChild[0].attributes.getNamedItem('loops').value;
+				primitiveValues = [type, inner, outer, slices, loops];
+				break;
 
-		if(sphere.length > 1){
-			console.log("More than one sphere in a primitive!\n")
-			return "More than one sphere in a primitive";
-		}
-		else if(sphere.length == 1){ //if no sphere tags are found, do nothing
-			var sph = [];
-			var radius = sphere[0].attributes.getNamedItem('radius').value;
-			var slices = sphere[0].attributes.getNamedItem('slices').value;
-			var stacks = sphere[0].attributes.getNamedItem('stacks').value;
-
-		}
-
-		var torus = curPrimitive.getElementsByTagName('torus');
-
-		if(torus.length > 1){
-			console.log("More than one torus in a primitive!\n")
-			return "More than one torus in a primitive";
-		}
-		else if(torus.length == 1){ //if no torus tags are found, do nothing
-			var rect = [];
-			var inner = torus[0].attributes.getNamedItem('x1').value;
-			var outer = torus[0].attributes.getNamedItem('y1').value;
-			var slices = torus[0].attributes.getNamedItem('x2').value;
-			var loops = torus[0].attributes.getNamedItem('y2').value;
+			default:
+				return "Invalid primitive name";
+				break;
 		}
 
+		this.primitives.push([id, primitiveValues]);
 
 	}
 
@@ -507,7 +478,6 @@ MySceneGraph.prototype.parseComponents= function (transformations) {
 
 	var componentElems = elems.getElementsByTagName('component');
 	var ids[];
-	this.components = [];
 
 	for(int i = 0; i < componentElems.length; ++i){
 
@@ -539,14 +509,14 @@ MySceneGraph.prototype.parseComponents= function (transformations) {
 					var tx = translate[0].attributes.getNamedItem('x').value;
 					var ty = translate[0].attributes.getNamedItem('y').value;
 					var tz = translate[0].attributes.getNamedItem('z').value;
-					curOperation = ['translate', tx, ty, tz];
+					curOperation = [type, tx, ty, tz];
 				break;
 
 				case 'rotate':
 					var rotate = curTransformation.getElementsByTagName('rotate');
 					var axis = rotate[0].attributes.getNamedItem('axis').value;
 					var length = rotate[0].attributes.getNamedItem('length').value;
-					curOperation = ['rotate', rotate, axis, length];
+					curOperation = [type, rotate, axis, length];
 				break;
 
 				case 'scale':
@@ -554,7 +524,7 @@ MySceneGraph.prototype.parseComponents= function (transformations) {
 					var sx = scale[0].attributes.getNamedItem('x').value;
 					var sy = scale[0].attributes.getNamedItem('y').value;
 					var sz = scale[0].attributes.getNamedItem('z').value;
-					curOperation = ['scale', sx, sy, sz];
+					curOperation = [type, sx, sy, sz];
 					break;
 
 				default:
