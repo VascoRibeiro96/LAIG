@@ -15,7 +15,7 @@ function MySceneGraph(filename, scene) {
 	 * If any error occurs, the reader calls onXMLError on this object, with an error message
 	 */
 	 
-	this.reader.open('scenes/'+filename, this);  
+	this.reader.open('scenes/'+filename, this);
 }
 
 /*
@@ -34,17 +34,14 @@ MySceneGraph.prototype.onXMLReady=function()
 		return;
 	}	
 		
-	
-	//TODO HANDLE ERRORS AND DEVELOP THESE FUNCTIONS
-	this.parseScene(rootElement); // PARSER DONE
-	this.parseView(rootElement); // TO BE DONE LATER
-	this.parseIllumination(rootElement); // //TO BE DONE LATER
-	this.parseLights(rootElement); // //TO BE DONE LATER
-	this.parseTextures(rootElement); // //TO BE DONE LATER
-	this.parseMaterials(rootElement); // //TO BE DONE LATER
-	this.parseTransformations(rootElement); //DONE FOR SPECIFIC CASE
-	this.parsePrimitives(rootElement); // TO DO
-	this.parseComponents(rootElement); //TO BE DONE LATER
+	this.parseScene(rootElement); 
+	this.parseView(rootElement); 
+	this.parseLights(rootElement); 
+	this.parseTextures(rootElement); 
+	this.parseMaterials(rootElement); 
+	this.parseTransformations(rootElement);
+	this.parsePrimitives(rootElement); 
+	this.parseComponents(rootElement); 
 
 
 	this.loadedOk=true;
@@ -53,8 +50,6 @@ MySceneGraph.prototype.onXMLReady=function()
 	// As the graph loaded ok, signal the scene so that any additional initialization depending on the graph can take place
 	this.scene.onGraphLoaded();
 };
-
-
 
 /*
  * Example of method that parses elements of one block and stores information in a specific data structure
@@ -508,6 +503,145 @@ MySceneGraph.prototype.parseComponents= function (transformations) {
 
 	if (elems.length != 1) {
 		return "Either zero or more than one 'components' element found.";
+	}
+
+	var componentElems = elems.getElementsByTagName('component');
+	var ids[];
+	this.components = [];
+
+	for(int i = 0; i < componentElems.length; ++i){
+
+
+		var id = componentElems[i].attributes.getNamedItem('id').value;
+		ids.push(id);
+
+		var transformation = componentElems[i].getElementsByTagName('transformation');
+
+		if (transformation.length != 1){
+			return "There needs to be one and only one 'transformation' block in each component.";
+		}
+
+		var operations = transformation.childNodes;
+
+		for(int j = 0; j < operations.length; ++j){
+
+			var curOperation = [];
+			var allTransformations = [];
+
+			var type = operations[j].tagName;
+
+				switch(type){
+				case 'transformationref':
+					curOperation = ['ref', operations[0].attributes.getNamedItem('id').value];
+					break;
+			
+				case 'translate':
+					var tx = translate[0].attributes.getNamedItem('x').value;
+					var ty = translate[0].attributes.getNamedItem('y').value;
+					var tz = translate[0].attributes.getNamedItem('z').value;
+					curOperation = ['translate', tx, ty, tz];
+				break;
+
+				case 'rotate':
+					var rotate = curTransformation.getElementsByTagName('rotate');
+					var axis = rotate[0].attributes.getNamedItem('axis').value;
+					var length = rotate[0].attributes.getNamedItem('length').value;
+					curOperation = ['rotate', rotate, axis, length];
+				break;
+
+				case 'scale':
+					var scale = curTransformation.getElementsByTagName('scale');
+					var sx = scale[0].attributes.getNamedItem('x').value;
+					var sy = scale[0].attributes.getNamedItem('y').value;
+					var sz = scale[0].attributes.getNamedItem('z').value;
+					curOperation = ['scale', sx, sy, sz];
+					break;
+
+				default:
+					console.log("Invalid transformation: " + type + "\n");
+					return "Invalid transformation";
+					break;
+
+			}
+
+			allTransformations.push(curTransformation);
+
+
+		}
+
+
+			var materials = componentElems[i].getElementsByTagName('materials');
+
+			if(materials.length != 1){
+				return "There need to be one and only one 'materials' block in each component";
+			}
+
+			var materialsElems = materials.childNodes;
+
+			if(materialsElems.length < 1){
+				return "There needs to be at least one material declared in each component";
+			}
+
+			var allMaterials = [];
+
+			for(int j = 0; j < materialsElems.length; ++j){
+				var materialId = materialsElems[j].attributes.getNamedItem('id').value;
+				allMaterials.push(materialId);
+			}
+
+
+
+			var textures = componentElems[i].getElementsByTagName('textures');
+
+			if(textures.length != 1){
+				return "There need to be one and only one 'textures' block in each component";
+			}
+
+			var texturesElems = textures.childNodes;
+			var allTextures = [];
+
+			for(int j = 0; j < texturesElems.length; ++j){
+				var textureId = materialsElems[j].attributes.getNamedItem('id').value;
+				allTextures.push(textureId);
+			}
+
+			var children = componentElems[i].getElementsByTagName('children');
+
+			if(children.length != 1){
+				return "There needs to be one and only one 'children' block in each component";
+			}
+
+			var childComponents = children.childNodes;
+
+			if(childComponents.length != 1){
+				return "There needs to be at least one child inside the 'children' block in each component";
+			}
+
+			for (int j = 0; j < childComponents.length; ++j){
+
+				var type = childComponents[j].tagName;
+				var curChild = [];
+				var childId = childComponents[j].attributes.getNamedItem('id').value;
+				var allChildren = [];
+				
+				if(type != 'primitiveref' && type != 'componentref'){
+					return "Invalid child name in components.\n Only 'primitiveref' and 'componentref' allowed";
+				}
+				else{
+					curChild = [type, id];
+				}
+
+				allChildren.push(curChild);
+
+			}
+
+			var curComponent = [id, allTransformations, allMaterials, allTextures, allChildren];
+			this.components.push(curComponent);		
+	}
+
+	if(compareIds(ids) == "Equal Ids"){
+		console.log("Equal Ids in components!\n");
+		return "Equal Ids";
 	}
 
 

@@ -1,0 +1,457 @@
+    <!-- A man made of geometrical shapes -->
+    
+<dsx>
+
+
+    <!-- deve definir-se um objeto para raiz do grafo , assim -->
+    <!-- como o comprimento dos tres eixos (cilindros) -->
+    <scene root="ss" axis_length="ff" />
+    
+    
+    <views default="ss" >
+    
+        <perspective id="firstView" near="1.0" far="1.0" angle="2.5">
+            <from x="0.0" y="0.0" z="0.0" />
+            <to x="15.0" y="15.0" z="15.0" />
+        </perspective>
+
+        <perspective id="secondView" near="2.0" far="0.5" angle="0.5">
+            <from x="2.0" y="-1.5" z ="0.0" />
+            <to x="10.0" y="-7.5" z = "1.0" />
+        </perspective>
+
+        <perspective id="secondView" near="2.0" far="0.5" angle="0.5">
+            <from x="-2.0" y="-5.5" z ="3.0" />
+            <to x="15.0" y="7.5" z = "1.0" />
+        </perspective>
+        
+    </views>
+    
+    <!-- White ambient illumination -->
+    <illumination doublesided="1" local="1" >
+    
+        <ambient r="0.5" g="0.5" b="0.5" a="1.0" />
+        <background r="0" g="0" b="0" a="1.0" />
+        
+    </illumination>
+    
+    
+    <lights>
+    
+        <omni id="topRed" enabled="1" >
+            <location x="0.0" y="0.0" z="20.0" w="15.0" />
+            <ambient r="0.8" g="0.0" b="0.0" a="1.0" />
+            <diffuse r="0.8" g="0.0" b="0.0" a="1.0" />
+            <specular r="0.8" g="0.0" b=".0" a="1.0" />
+        </omni>
+        
+        <spot id="firstSpot" enabled="1" angle="2.5" exponent="1.1">
+            <target x="0" y="0" z="0" />
+            <location x="15" y="15" z="15" />
+            <ambient r="0.4" g="0.4" b="0.4" a="1.0" />
+            <diffuse r="0.4" g="0.4" b="0.4" a="1.0" />
+            <specular r="0.4" g="0.4" b="0.4" a="1.0" />
+        </spot>
+
+        <spot id="secondSpot" enabled="0" angle="2.5" exponent="1.1">
+            <target x="5.0" y="5.0" .0="50" />
+            <location x="0.0" y="0.0" z="0.0" />
+            <ambient r="0.4" g="0.4" b="0.4" a="1.0" />
+            <diffuse r="0.4" g="0.4" b="0.4" a="1.0" />
+            <specular r="0.4" g="0.4" b="0.4" a="1.0" />
+        </spot>
+
+        <spot id="greenSpot" enabled="1" angle="2.5" exponent="1.1">
+            <target x="10.0" y="0.0" z="2.0" />
+            <location x="15.0" y="15.0" z="15.0" />
+            <ambient r="0.0" g="0.8" b="0.0" a="1.0" />
+            <diffuse r="0.0" g="0.0" b="0.0" a="0.0" />
+            <specular r="0.0" g="0.8" b="0.0" a="1.0" />
+        </spot>
+
+        <omni id="sidePurple" enabled="1" >
+            <location x="20.0" y="0.0" z="0.0" w="5.0" />
+            <ambient r="0.4" g="0.0" b="0.6" a="1.0" />
+            <diffuse r="0.4" g="0.0" b="0.6" a="1.0" />
+            <specular r="0.4" g="0.0" b="0.6" a="1.0" />
+        </omni>
+
+
+    </lights>
+    
+    
+    <textures>
+
+        <texture id="camo1" file="camo1.jpg" length_s="1.0" length_t="1.5" /> 
+        <texture id="camo2" file="camo2.jpg" length_s="1.0" length_t="1.5" />  
+        <texture id="simpleYellow" file="yellow.png" length_s="2.0" length_t="3.0" /> 
+        <texture id="fractal" file="fractal.jpg" length_s="3.0" length_t="3.0" />
+
+    </textures>
+
+    
+    <materials>
+    
+        <material id="black" >
+            <emission r="0.0" g="0.0" b="0.0" a="1.0" />
+            <ambient r="0.0" g="0.0" b="0.0" a="1.0" />
+            <diffuse r="0.0" g="0.0" b="0.0" a="0.0" />
+            <specular r="0.0" g="0.0" b="0.0" a="0.0" />
+            <shininess value="0.0" />
+        </material>
+
+        <material id="transparentGreen" >
+            <emission r="0.0" g="0.4" b="0.0" a="0.3" />
+            <ambient r="0.0" g="0.4" b="0.0" a="0.3" />
+            <diffuse r="0.0" g="0.4" b="0.0" a="0.3" />
+            <specular r="0.0" g="0.4" b="0.0" a="0.3" />
+            <shininess value="0.1" />
+        </material>
+
+        <material id="polishedWhite" >
+            <emission r="1.0" g="1.0" b="1.0" a="1.0" />
+            <ambient r="1.0" g="1.0" b="1.0" a="1.0" />
+            <diffuse r="1.0" g="1.0" b="1.0" a="1.0" />
+            <specular r="1.0" g="1.0" b="1.0" a="1.0" />
+            <shininess value="1.0" />
+        </material>
+        
+    </materials>
+    
+    
+    <transformations>
+    
+        <transformation id="uTurnX">
+
+           <translate x="3.0" y="0.0" z="0.0" />
+           <rotate axis="x" angle="3.1415" />
+           <translate x="-3.0" y="0.0" z="0.0" />
+
+        </transformation>
+
+        <transformation id="uTurnGrow">
+
+           <rotate axis="y" angle="1.57" />
+           <scale x="2.0" y="2.0" z="2.0" />
+           <translate x="2.0" y="0.0" z="0.0" />
+
+        </transformation>
+
+        <transformation id="complexTransformation">
+
+           <translate x="3.0" y="3.0" z="3.0" />
+           <rotate axis="z" angle="1.0" />
+           <translate x="-5.0" y="-2.0" z="1.0" />
+           <rotate axis="y" angle="2.5" />
+           <translate x="3.0" y="1.0" z="-2.0" />
+           <scale x="1.5" y="1.5" z="1.0" />
+
+        </transformation>
+
+        <transformation id="moveLeft">
+            <translate x="0.0" y="-1.5" z="0.0" />
+        </transformation>
+
+    </transformations>
+    
+    <primitives>
+    
+        <!-- Works for arms and legs -->
+        <primitive id="member">
+            <cylinder base="1.0" top="1.0" height="1.0" slices="20" stacks="20" />
+        </primitive>
+
+        <!-- Will be used to build the body -->
+        <primitive id="unitaryRectangle">
+            <rectangle x1="0.0" y1="0.0" x2="1.0" y2="1.0" />
+        </primitive>
+
+        <primitive id="head">
+            <sphere radius="0.5" slices="20" stacks="20" />
+        </primitive>
+
+        <!-- WIP : needs testing -->
+        <primitive id="crown">
+            <torus inner="1.0" outer="1.0" slices="20" loops="20" />
+        </primitive>
+
+    </primitives>
+      
+    <components>
+        
+    <component id="torsoFront">
+        
+            <transformation>
+                <scale x="1.0" y="1.5" z="1.5" />
+                <translate x="-0.25" y="-0.75" z="0.0" />
+            </transformation>
+       
+            <materials>
+                <material id="inherit" />
+            </materials>
+
+            <texture id="yellow" />
+            
+            <children>
+                <primitiveref id="unitaryRectangle" />     
+            </children>
+            
+    </component>
+
+    <component id="torsoBack">
+        
+            <transformation>
+                <scale x="1.0" y="1.5" z="1.5" />
+                <translate x="-0.25" y="-0.75" z="0.0" />
+            </transformation>
+       
+            <materials>
+                <material id="inherit" />
+            </materials>
+
+            <texture id="yellow" />
+            
+            <children>
+                <primitiveref id="unitaryRectangle" />     
+            </children>
+            
+    </component>
+
+    <component id="torsoLeft">
+        
+            <transformation>
+                <scale x="1.0" y="0.5" z="1.5" />
+                <rotate axis="z" angle="1.57" />
+                <translate x="-0.50" y="-0.25" z="0.0" />
+            </transformation>
+       
+            <materials>
+                <material id="inherit" />
+            </materials>
+
+            <texture id="yellow" />
+            
+            <children>
+                <primitiveref id="unitaryRectangle" />     
+            </children>
+            
+    </component>
+
+    <component id="torsoRight">
+        
+            <transformation>
+                <scale x="1.0" y="0.5" z="1.5" />
+                <rotate axis="z" angle="1.57" />
+                <translate x="-0.25" y="1.5" z="0.0" />
+            </transformation>
+       
+            <materials>
+                <material id="inherit" />
+            </materials>
+
+            <texture id="yellow" />
+            
+            <children>
+                <primitiveref id="unitaryRectangle" />     
+            </children>
+            
+    </component>
+
+
+
+        <component id="leftLeg">
+        
+            <transformation>
+                <transformationref id="moveLeft" />
+            </transformation>
+       
+            <materials>
+                <material id="inherit" />
+            </materials>
+
+            <texture id="yellow" />
+            
+            <children>
+                <primitiveref id="member" />     
+            </children>
+            
+        </component>
+
+        <component id="rightLeg">
+        
+            <transformation>
+                <translate x="0.0" y="0.5" z="0.0" />
+            </transformation>
+       
+            <materials>
+                <material id="inherit" />
+            </materials>
+
+            <texture id="yellow" />
+            
+            <children>
+                <primitiveref id="member" />     
+            </children>
+            
+        </component>
+
+        <component id="LeftArm">
+        
+            <transformation>
+                <scale x="0.7" y="0.7" z="0.6" />
+                <translate x="0.0" y="-1.45" z="2.4" />
+            </transformation>
+       
+            <materials>
+                <material id="inherit" />
+            </materials>
+
+            <texture id="yellow" />
+            
+            <children>
+                <primitiveref id="member" />     
+            </children>
+            
+        </component>
+
+        <component id="rightArm">
+        
+            <transformation>
+                <scale x="0.7" y="0.7" z="0.6" />
+                <translate x="0.0" y="0.75" z="2.4" />
+            </transformation>
+       
+            <materials>
+                <material id="inherit" />
+            </materials>
+
+            <texture id="yellow" />
+            
+            <children>
+                <primitiveref id="member" />     
+            </children>
+            
+        </component>
+
+        <component id="head">
+        
+            <transformation>
+            </transformation>
+       
+            <materials>
+                <material id="inherit" />
+            </materials>
+
+            <texture id="yellow" />
+            
+            <children>
+                <primitiveref id="head" />     
+            </children>
+            
+        </component>
+
+           <component id="hat">
+        
+            <transformation>
+                <translate x="0.0" y="0.0" z="0.0">
+            </transformation>
+       
+            <materials>
+                <material id="black" />
+            </materials>
+
+            <texture id="yellow" />
+            
+            <children>
+            </children>
+            
+        </component>
+
+        <component id="headHat">
+        
+            <transformation>
+                <translate x="0.0" y="0.0" z="3.0">
+            </transformation>
+       
+            <materials>
+                <material id="inherit" />
+            </materials>
+
+            <texture id="yellow" />
+            
+            <children>
+                <componentref id="head" />
+                <componentref id="hat" />
+
+            </children>
+            
+        </component>
+
+        <component id="torso">
+        
+            <transformation>
+            <translate x="0.0" y="0.0" z="1.0">
+
+            </transformation>
+
+            <materials>
+                <material id="inherit" />
+            </materials>
+
+            <texture id="yellow" />
+            
+            <children>
+                <componentref id="bodyFront" />
+                <componentref id="bodyBack" />
+                <componentref id="bodyLeft" />
+                <componentref id="bodyRight" />
+            </children>
+            
+        </component>
+
+        <component id="members">
+        
+            <transformation>
+            </transformation>
+       
+            <materials>
+                <material id="black" />
+            </materials>
+
+            <texture id="yellow" />
+            
+            <children>
+                <componentref id="leftLeg" />
+                <componentref id="rightLeg" />
+                <componentref id="leftArm" />
+                <componentref id="rightArm" />  
+            </children>
+            
+        </component>
+
+
+        <!-- Final Figure -->
+        <component id="Man">
+        
+            <transformation>
+            <trasnformationref id="uTurnGrow" />
+            </transformation>
+       
+            <materials>
+                <material id="inherit" />
+            </materials>
+
+            <texture id="yellow" />
+            
+            <children>
+                <componentref id="torso"/>     
+                <componentref id="members"/>
+                <componentref id="headHat"/>
+            </children>
+            
+        </component>
+
+        
+    </components>
+
+</dsx>
