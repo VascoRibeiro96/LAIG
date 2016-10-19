@@ -1,12 +1,4 @@
-this.transformations = [];
-this.perspectives = [];
-this.illumination = [];
-this.lights = [];
-this.textures = [];
-this.materials = [];
-this.transformations = [];
-this.primitives = [];
-this.components = [];
+
 
 
 function MySceneGraph(filename, scene) {
@@ -15,6 +7,18 @@ function MySceneGraph(filename, scene) {
 	// Establish bidirectional references between scene and graph
 	this.scene = scene;
 	scene.graph=this;
+
+
+	this.sceneValues = [];
+	this.transformations = [];
+	this.perspectives = [];
+	this.illumination = [];
+	this.lights = [];
+	this.textures = [];
+	this.materials = [];
+	this.transformations = [];
+	this.primitives = [];
+	this.components = [];
 		
 	// File reading 
 	this.reader = new CGFXMLreader();
@@ -36,22 +40,55 @@ MySceneGraph.prototype.onXMLReady=function()
 	console.log("DSX Loading finished.");
 	var rootElement = this.reader.xmlDoc.documentElement;
 	
-	// Here should go the calls for different functions to parse the various blocks
 	var error = this.parseScene(rootElement);
-
 	if (error != null) {
 		this.onXMLError(error);
 		return;
 	}	
 		
-	this.parseScene(rootElement); 
-	this.parseView(rootElement); 
-	this.parseLights(rootElement); 
-	this.parseTextures(rootElement); 
-	this.parseMaterials(rootElement); 
-	this.parseTransformations(rootElement);
-	this.parsePrimitives(rootElement); 
-	this.parseComponents(rootElement); 
+	error = this.parseView(rootElement); 
+	if (error != null) {
+		this.onXMLError(error);
+		return;
+	}	
+	
+	error = this.parseLights(rootElement); 
+	if (error != null) {
+		this.onXMLError(error);
+		return;
+	}	
+	
+	error = this.parseTextures(rootElement); 
+	if (error != null) {
+		this.onXMLError(error);
+		return;
+	}	
+	
+	error = this.parseMaterials(rootElement); 
+	if (error != null) {
+		this.onXMLError(error);
+		return;
+	}	
+	
+	error = this.parseTransformations(rootElement);
+	if (error != null) {
+		this.onXMLError(error);
+		return;
+	}	
+	
+	error = this.parsePrimitives(rootElement); 
+	if (error != null) {
+		this.onXMLError(error);
+		return;
+	}	
+	
+	error = this.parseComponents(rootElement); 
+	if (error != null) {
+		this.onXMLError(error);
+		return;
+	}	
+
+	console.log("Parsed everything");
 
 
 	this.loadedOk=true;
@@ -77,25 +114,26 @@ MySceneGraph.prototype.parseScene= function(rootElement) {
 
 	var scene = elems[0];
 
-	this.root = this.reader.getItem(scene, 'root');
+	var root = scene.attributes.getNamedItem('root').value;
 
 	if(root == null) {
 		return "Root Element is missing.";
 	}
 
-	this.axis_length = this.reader.getItem(scene, 'axis_length');
+	var axis_length = scene.attributes.getNamedItem('axis_length').value;
 
 	if(axis_length == null){
 		return "Axis-length is missing.";
 	}
 
-	console.log("Scene read from file: {Root=" + this.root + ", Axis-length=" + this.axis_length +"}");
+	this.sceneValues = [root, axis_length];
 
-	return "All done!";
+	console.log("Scene read from file: {Root=" + root + ", Axis-length=" + axis_length +"}");
+
 };
 
 
-MySceneGraph.prototype.parseView= function (primitives) {
+MySceneGraph.prototype.parseView= function (rootElement) {
 	
 	var elems =  rootElement.getElementsByTagName('views');
 
@@ -110,7 +148,7 @@ MySceneGraph.prototype.parseView= function (primitives) {
 	var perspective = elems[0].getElementsByTagName('perspective');
 	var ids = [];	
 	
-	for(int i = 0; i < perspective.length; ++i){
+	for(i = 0; i < perspective.length; ++i){
 		var curPerspective = perspective[i];
 
 		var id = curPerspective.attributes.getNamedItem('id').value;
@@ -119,20 +157,39 @@ MySceneGraph.prototype.parseView= function (primitives) {
 		var near = curPerspective.attributes.getNamedItem('near').value;
 		var far = curPerspective.attributes.getNamedItem('far').value;
 		var angle = curPerspective.attributes.getNamedItem('angle').value;
-		var from = curPerspective.attributes.getNamedItem('from').value;
-		var to = curPerspective.attributes.getNamedItem('to').value;
+
+		var perspectiveAttributes = curPerspective.children;
+
+		if(perspectiveAttributes.length != 2 || perspectiveAttributes[0].tagName != 'from' || perspectiveAttributes[1].tagName != 'to'){
+			return "Each perspective needs to have and only have a 'from' and a 'to' tag in this order";
+		}
+
+		var from = [];
+		var to = [];
+
+		var xf = perspectiveAttributes[0].attributes.getNamedItem('x').value;
+		var yf = perspectiveAttributes[0].attributes.getNamedItem('y').value;
+		var zf = perspectiveAttributes[0].attributes.getNamedItem('z').value;
+
+		from = [xf, yf, zf];
+
+		var xt = perspectiveAttributes[1].attributes.getNamedItem('x').value;
+		var yt = perspectiveAttributes[1].attributes.getNamedItem('y').value;
+		var zt = perspectiveAttributes[1].attributes.getNamedItem('z').value;
+
+		to = [xt, yt, zt];
 		
 		curPerspective = [id, near, far, angle, from, to];
 		this.perspectives.push(curPerspective);
 	}
 	
-	if(compareIds(ids) == "Equal Ids"){
-		console.log("Equal Ids in transformations!\n");
+	if(this.compareIds(ids) == "Equal Ids"){
+		console.log("Equal Ids in Views!\n");
 		return "Equal Ids";
 	}
 }
 
-MySceneGraph.prototype.parseIllumination= function (transformations) {
+MySceneGraph.prototype.parseIllumination= function (rootElement) {
 	
 	var elems =  rootElement.getElementsByTagName('illumination');
 
@@ -152,7 +209,7 @@ MySceneGraph.prototype.parseIllumination= function (transformations) {
 	this.illumination = [doublesided, local, ambient, background];
 }
 
-MySceneGraph.prototype.parseLights= function (illumination) {
+MySceneGraph.prototype.parseLights= function (rootElement) {
 	
 	var elems =  rootElement.getElementsByTagName('lights');
 
@@ -171,7 +228,7 @@ MySceneGraph.prototype.parseLights= function (illumination) {
 	var omni = []; 
 	var spot = [];
 	
-	for(int i = 0; i < omni.length; ++i){
+	for(i = 0; i < omni.length; ++i){
 		var curOmni = omni[i];
 
 		var id = curOmni.attributes.getNamedItem('id').value;
@@ -187,7 +244,7 @@ MySceneGraph.prototype.parseLights= function (illumination) {
 		omni.push(curOmni);
 	}
 	
-	for(int i = 0; i < spot.length; ++i){
+	for(i = 0; i < spot.length; ++i){
 		var curSpot = spot[i];
 
 		var id = curSpot.attributes.getNamedItem('id').value;
@@ -208,19 +265,19 @@ MySceneGraph.prototype.parseLights= function (illumination) {
 
 	this.lights = [omni, spot];
 	
-	if(compareIds(idsOmni) == "Equal Ids"){
-		console.log("Equal Ids in transformations!\n");
+	if(this.compareIds(idsOmni) == "Equal Ids"){
+		console.log("Equal Ids in omni lights!\n");
 		return "Equal Ids";
 	}
 	
-	if(compareIds(idsSpot) == "Equal Ids"){
-		console.log("Equal Ids in transformations!\n");
+	if(this.compareIds(idsSpot) == "Equal Ids"){
+		console.log("Equal Ids in spot lights!\n");
 		return "Equal Ids";
 	}
 
 }
 
-MySceneGraph.prototype.parseTextures= function (primitives) {
+MySceneGraph.prototype.parseTextures= function (rootElement) {
 	
 	var elems =  rootElement.getElementsByTagName('textures');
 
@@ -235,7 +292,7 @@ MySceneGraph.prototype.parseTextures= function (primitives) {
 	var texture = elems[0].getElementsByTagName('texture');
 	var ids = [];	
 	
-	for(int i = 0; i < texture.length; ++i){
+	for(i = 0; i < texture.length; ++i){
 		var curTexture = texture[i];
 
 		var id = curTexture.attributes.getNamedItem('id').value;
@@ -249,17 +306,20 @@ MySceneGraph.prototype.parseTextures= function (primitives) {
 		this.textures.push(curTexture);
 	}
 	
-	if(compareIds(ids) == "Equal Ids"){
+	if(this.compareIds(ids) == "Equal Ids"){
 		console.log("Equal Ids in transformations!\n");
 		return "Equal Ids";
 	}
 
 }
 
-MySceneGraph.prototype.parseMaterials= function (transformations) {
+MySceneGraph.prototype.parseMaterials= function (rootElement) {
 	
+
+	//TEMPORARIO -- NAO PERMITE DEBUGGING
 	var elems =  rootElement.getElementsByTagName('materials');
 
+/*
 	if (elems == null) {
 		return "'materials' element is missing.";
 	}
@@ -267,34 +327,46 @@ MySceneGraph.prototype.parseMaterials= function (transformations) {
 	if (elems.length != 1) {
 		return "Either zero or more than one 'materials' element found.";
 	}
-
+*/
 	var material = elems[0].getElementsByTagName('material');
 	var ids = [];	
 	
-	for(int i = 0; i < material.length; ++i){
+	for(i = 0; i < material.length; ++i){
 		var curMaterial = material[i];
+		var materialAttributes = [];
 
 		var id = curMaterial.attributes.getNamedItem('id').value;
 		ids[i] = id;
-		
-		var emission = curMaterial.attributes.getNamedItem('emission').value;
-		var ambient = curMaterial.attributes.getNamedItem('ambient').value;
-		var diffuse = curMaterial.attributes.getNamedItem('diffuse').value;
-		var specular = curMaterial.attributes.getNamedItem('specular').value;
-		var shininess = curMaterial.attributes.getNamedItem('shininess').value;
-		
-		curMaterial = [id, file, length_s, length_t];
-		this.materials.push(curMaterial);
+
+		var materialChidren = curMaterial.children;
+
+		materialAttributes.push(id);
+
+		for(j = 0; j < materialChidren.length - 1; ++j){
+			var r = materialChidren[j].attributes.getNamedItem('r').value;
+			var g = materialChidren[j].attributes.getNamedItem('g').value;
+			var b = materialChidren[j].attributes.getNamedItem('b').value;
+			var a = materialChidren[j].attributes.getNamedItem('a').value;
+			var type = materialChidren[j].tagName;
+
+			var curAttribute = [type, r, g, b, a];
+			materialAttributes.push(curAttribute);
+		}
+
+		var shineness = materialChidren[4].attributes.getNamedItem('value').value;
+		materialAttributes.push(shineness);
+
+		this.materials.push(materialAttributes);
 	}
 	
-	if(compareIds(ids) == "Equal Ids"){
+	if(this.compareIds(ids) == "Equal Ids"){
 		console.log("Equal Ids in transformations!\n");
 		return "Equal Ids";
 	}
 
 }
 
-MySceneGraph.prototype.parseTransformations= function (illumination) {
+MySceneGraph.prototype.parseTransformations= function (rootElement) {
 	
 	var elems =  rootElement.getElementsByTagName('transformations');
 
@@ -309,13 +381,14 @@ MySceneGraph.prototype.parseTransformations= function (illumination) {
 	var transformationsElems = elems[0].getElementsByTagName('transformation');
 	var ids = [];
 
-	for(int i = 0; i < transformationsElems.length; ++i){
+	for(i = 0; i < transformationsElems.length; ++i){
 		var curTransformation = transformationsElems[i];
+		var transformationValues = [];
 
 		var id = curTransformation.attributes.getNamedItem('id').value;
 		ids[i] = id;
 
-		var children = curTransformation.childNodes;
+		var children = curTransformation.children;
 
 		if(children.length == 0){
 			console.log("There needs to be one or more transformation operations inside each transformation.\n")
@@ -323,7 +396,7 @@ MySceneGraph.prototype.parseTransformations= function (illumination) {
 		}
 
 
-		for(int j = 0; j < children.length; ++j){
+		for(j = 0; j < children.length; ++j){
 			var operation = children[j];
 
 			var type = children[j].tagName;
@@ -331,24 +404,23 @@ MySceneGraph.prototype.parseTransformations= function (illumination) {
 
 			switch(type){
 				case 'translate':
-					var tx = translate[0].attributes.getNamedItem('x').value;
-					var ty = translate[0].attributes.getNamedItem('y').value;
-					var tz = translate[0].attributes.getNamedItem('z').value;
+					var tx = children[j].attributes.getNamedItem('x').value;
+					var ty = children[j].attributes.getNamedItem('y').value;
+					var tz = children[j].attributes.getNamedItem('z').value;
 					op = ['translate', tx, ty, tz];
 				break;
 
 				case 'rotate':
-					var rotate = curTransformation.getElementsByTagName('rotate');
-					var axis = rotate[0].attributes.getNamedItem('axis').value;
-					var length = rotate[0].attributes.getNamedItem('length').value;
-					op = ['rotate', rotate, axis, length];
+					var rotate = children[j].getElementsByTagName('rotate');
+					var axis = children[j].attributes.getNamedItem('axis').value;
+					op = ['rotate', rotate, axis];
 				break;
 
 				case 'scale':
 					var scale = curTransformation.getElementsByTagName('scale');
-					var sx = scale[0].attributes.getNamedItem('x').value;
-					var sy = scale[0].attributes.getNamedItem('y').value;
-					var sz = scale[0].attributes.getNamedItem('z').value;
+					var sx = children[j].attributes.getNamedItem('x').value;
+					var sy = children[j].attributes.getNamedItem('y').value;
+					var sz = children[j].attributes.getNamedItem('z').value;
 					op = ['scale', sx, sy, sz];
 					break;
 
@@ -357,21 +429,21 @@ MySceneGraph.prototype.parseTransformations= function (illumination) {
 					return "Invalid transformation";
 			}
 
-			curTransformation.push([id, op]);
+			transformationValues.push([id, op]);
 		}
 
-		transformations.push(curTransformation);
+		this.transformations.push(transformationValues);
 
 	}
 
-	if(compareIds(ids) == "Equal Ids"){
+	if(this.compareIds(ids) == "Equal Ids"){
 			console.log("Equal Ids in transformations!\n");
 			return "Equal Ids";
 		}
 
 }
 
-MySceneGraph.prototype.parsePrimitives= function (primitives) {
+MySceneGraph.prototype.parsePrimitives= function (rootElement) {
 	
 	var elems =  rootElement.getElementsByTagName('primitives');
 
@@ -384,19 +456,19 @@ MySceneGraph.prototype.parsePrimitives= function (primitives) {
 	}
 
 	var primitivesElems = elems[0].getElementsByTagName('primitive');
-	var ids[];
+	var ids = [];
 
-	for(int i = 0; i < primitivesElems.length; ++i){
+	for(i = 0; i < primitivesElems.length; ++i){
 		
 		var curPrimitive = primitivesElems[i];
 
 		var id = curPrimitive.attributes.getNamedItem('id');
 		ids[i] = id;
 
-		var primitiveChild = curPrimitive.childNodes;
+		var primitiveChild = curPrimitive.children;
 		var primitiveValues = [];
 
-		if(primitiveChild != 1){
+		if(primitiveChild.length != 1){
 			return "There must be one and only one element inside each primitive";
 		}
 
@@ -457,14 +529,14 @@ MySceneGraph.prototype.parsePrimitives= function (primitives) {
 
 	}
 
-	if(compareIds(ids) == "Equal Ids"){
+	if(this.compareIds(ids) == "Equal Ids"){
 			console.log("Equal Ids in primitives!\n");
 			return "Equal Ids";
 		}
 }
 
 
-MySceneGraph.prototype.parseComponents= function (transformations) {
+MySceneGraph.prototype.parseComponents= function (rootElement) {
 	
 	var elems =  rootElement.getElementsByTagName('components');
 
@@ -476,10 +548,10 @@ MySceneGraph.prototype.parseComponents= function (transformations) {
 		return "Either zero or more than one 'components' element found.";
 	}
 
-	var componentElems = elems.getElementsByTagName('component');
-	var ids[];
+	var componentElems = elems[0].getElementsByTagName('component');
+	var ids = [];
 
-	for(int i = 0; i < componentElems.length; ++i){
+	for(i = 0; i < componentElems.length; ++i){
 
 
 		var id = componentElems[i].attributes.getNamedItem('id').value;
@@ -491,9 +563,9 @@ MySceneGraph.prototype.parseComponents= function (transformations) {
 			return "There needs to be one and only one 'transformation' block in each component.";
 		}
 
-		var operations = transformation.childNodes;
+		var operations = transformation[0].children;
 
-		for(int j = 0; j < operations.length; ++j){
+		for(j = 0; j < operations.length; ++j){
 
 			var curOperation = [];
 			var allTransformations = [];
@@ -502,28 +574,27 @@ MySceneGraph.prototype.parseComponents= function (transformations) {
 
 				switch(type){
 				case 'transformationref':
-					curOperation = ['ref', operations[0].attributes.getNamedItem('id').value];
+					curOperation = ['ref', operations[j].attributes.getNamedItem('id').value];
 					break;
 			
 				case 'translate':
-					var tx = translate[0].attributes.getNamedItem('x').value;
-					var ty = translate[0].attributes.getNamedItem('y').value;
-					var tz = translate[0].attributes.getNamedItem('z').value;
+					var tx = operations[j].attributes.getNamedItem('x').value;
+					var ty = operations[j].attributes.getNamedItem('y').value;
+					var tz = operations[j].attributes.getNamedItem('z').value;
 					curOperation = [type, tx, ty, tz];
 				break;
 
 				case 'rotate':
-					var rotate = curTransformation.getElementsByTagName('rotate');
-					var axis = rotate[0].attributes.getNamedItem('axis').value;
-					var length = rotate[0].attributes.getNamedItem('length').value;
-					curOperation = [type, rotate, axis, length];
+					var rotate = operations[j].getElementsByTagName('rotate');
+					var axis = operations[j].attributes.getNamedItem('axis').value;
+					curOperation = [type, rotate, axis];
 				break;
 
 				case 'scale':
-					var scale = curTransformation.getElementsByTagName('scale');
-					var sx = scale[0].attributes.getNamedItem('x').value;
-					var sy = scale[0].attributes.getNamedItem('y').value;
-					var sz = scale[0].attributes.getNamedItem('z').value;
+					var scale = operations[j].getElementsByTagName('scale');
+					var sx = operations[j].attributes.getNamedItem('x').value;
+					var sy = operations[j].attributes.getNamedItem('y').value;
+					var sz = operations[j].attributes.getNamedItem('z').value;
 					curOperation = [type, sx, sy, sz];
 					break;
 
@@ -534,7 +605,7 @@ MySceneGraph.prototype.parseComponents= function (transformations) {
 
 			}
 
-			allTransformations.push(curTransformation);
+			allTransformations.push(curOperation);
 
 
 		}
@@ -546,7 +617,7 @@ MySceneGraph.prototype.parseComponents= function (transformations) {
 				return "There need to be one and only one 'materials' block in each component";
 			}
 
-			var materialsElems = materials.childNodes;
+			var materialsElems = materials[0].children;
 
 			if(materialsElems.length < 1){
 				return "There needs to be at least one material declared in each component";
@@ -554,23 +625,23 @@ MySceneGraph.prototype.parseComponents= function (transformations) {
 
 			var allMaterials = [];
 
-			for(int j = 0; j < materialsElems.length; ++j){
+			for(j = 0; j < materialsElems.length; ++j){
 				var materialId = materialsElems[j].attributes.getNamedItem('id').value;
 				allMaterials.push(materialId);
 			}
 
 
 
-			var textures = componentElems[i].getElementsByTagName('textures');
+			var textures = componentElems[i].getElementsByTagName('texture');
 
 			if(textures.length != 1){
 				return "There need to be one and only one 'textures' block in each component";
 			}
 
-			var texturesElems = textures.childNodes;
+			var texturesElems = textures[0].children;
 			var allTextures = [];
 
-			for(int j = 0; j < texturesElems.length; ++j){
+			for(j = 0; j < texturesElems.length; ++j){
 				var textureId = materialsElems[j].attributes.getNamedItem('id').value;
 				allTextures.push(textureId);
 			}
@@ -581,13 +652,15 @@ MySceneGraph.prototype.parseComponents= function (transformations) {
 				return "There needs to be one and only one 'children' block in each component";
 			}
 
-			var childComponents = children.childNodes;
+			var childComponents = children[0].children;
 
-			if(childComponents.length != 1){
+			console.log(childComponents);
+
+			if(childComponents.length < 1){
 				return "There needs to be at least one child inside the 'children' block in each component";
 			}
 
-			for (int j = 0; j < childComponents.length; ++j){
+			for (j = 0; j < childComponents.length; ++j){
 
 				var type = childComponents[j].tagName;
 				var curChild = [];
@@ -609,7 +682,7 @@ MySceneGraph.prototype.parseComponents= function (transformations) {
 			this.components.push(curComponent);		
 	}
 
-	if(compareIds(ids) == "Equal Ids"){
+	if(this.compareIds(ids) == "Equal Ids"){
 		console.log("Equal Ids in components!\n");
 		return "Equal Ids";
 	}
@@ -618,8 +691,8 @@ MySceneGraph.prototype.parseComponents= function (transformations) {
 }
 
 MySceneGraph.prototype.compareIds = function(ids){
-	for(int i = 0; i < ids.length; ++i)
-		for(int j = i + 1; j < ids.length; ++j)
+	for(i = 0; i < ids.length; ++i)
+		for(j = i + 1; j < ids.length; ++j)
 			if(i != j && ids[i] == ids[j])
 				return "Equal Ids";
 }
