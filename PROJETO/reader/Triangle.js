@@ -43,16 +43,38 @@
  	0, 1, 2, 
  	];
 
- 	this.primitiveType = this.scene.gl.TRIANGLES;
+	var a = Math.sqrt((x1-x2)*(x1-x2) + (y1-y2)*(y1-y2) + (z1-z2)*(z1-z2));
+    var b = Math.sqrt((x2-x3)*(x2-x3) + (y2-y3)*(y2-y3) + (z2-z3)*(z2-z3));
+    var c = Math.sqrt((x3-x1)*(x3-x1) + (y3-y1)*(y3-y1) + (z3-z1)*(z3-z1));
+
+
+    var cosC = (a*a + b*b - c*c)/ (2*a*b);
+
+    var sinC = Math.sqrt(1- cosC*cosC);
+
+    this.texCoords = [a-b*cosC, b*sinC,
+        0,0,
+        a,0];
+
+    var vec1 = {}, vec2 = {}, vecf = {};
+    vec1.x = (x3-x1) / c;
+	vec1.y = (y3-y1) / c; 
+	vec1.z = (z3-z1) / c;
+    vec2.x = (x2-x1) / a;
+	vec2.y = (y2-y1) / a; 
+	vec2.z = (z2-z1) / a;
+
+    vecf.x = vec1.y*vec2.z - vec1.z*vec2.y;
+    vecf.y = vec1.z*vec2.x - vec1.x*vec2.z;
+    vecf.z = vec1.x*vec2.y - vec1.y*vec2.x;
 
     this.normals = [
-    0, 0, 1,
-    0, 0, 1,
-    0, 0, 1,
+        0,0,1,
+        0, 0, 1,
+        0, 0, 1,
     ];
-
-	];
-    
+	
+ 	this.primitiveType = this.scene.gl.TRIANGLES;  
 
     
  	this.initGLBuffers();
