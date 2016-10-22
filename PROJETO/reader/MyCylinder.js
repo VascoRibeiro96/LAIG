@@ -2,7 +2,7 @@
  * MyCylinder
  * @constructor
  */
- function MyCylinder(scene, slices, stacks) {
+ function MyCylinder(scene, base, top, height, slices, stacks) {
  	CGFobject.call(this,scene);
 
 	//if slices not define, set to 6
@@ -11,9 +11,16 @@
  	//if stacks not define, set to 5
  	stacks = typeof stacks !== 'undefined' ? stacks : 5;
 	
+	this.scene = scene;
+	this.base = base;
+	this.top = top;
+	this.height = height;
 	this.slices = slices;
 	this.stacks = stacks;
 
+	this.baseCircle = newMyCircle(this.scene, this.slices, this.base);
+	this.topCircle = newMyCircle(this.scene, this.slices, this.top);
+	
  	this.initBuffers();
  };
 
@@ -21,58 +28,59 @@
  MyCylinder.prototype.constructor = MyCylinder;
 
  MyCylinder.prototype.initBuffers = function() {
- 	/*
- 	* TODO:
- 	* Replace the following lines in order to build a prism with a **single mesh**.
- 	*
- 	* How can the vertices, indices and normals arrays be defined to
- 	* build a prism with varying number of slices and stacks?
- 	*/
-
-	//Sets the number os sides;
+ 	
+	
  	var sides = this.slices;
  	var stacks = this.stacks;
 
 	var n = 2*Math.PI / sides;
 
+	var diference = (this.base - this.top) / this.stacks;
 	this.vertices = [];
 	this.normals = [];
 	this.indices = [];
 	this.texCoords = [];
+	var z = 0;
+	var tCoord = 1;
+    var sUpdate = 1 / this.slices;
+    var tUpdate = 1 / this.stacks;
 	
 	for(var q = 0; q < this.stacks+1; q++){
 		
-		var z = (q/this.stacks);
+		var sCoord = 0;
 
 		for(var i = 0; i < sides; i++)
 		{
-			this.vertices.push(Math.cos(i * n),Math.sin(i * n), z);
-			this.normals.push(Math.cos(i * n),Math.sin(i * n), 0);
-			this.texCoords.push(0.5*i/sides,0.5*i/sides,0);
-			this.texCoords.push(0.5*i/sides,0.5*i/sides,z);
-		}
-
-	}
-
-
-	for(var q = 0; q < this.stacks; q++){
-		for(var i = 0; i < sides; i++)
-		{
-			this.indices.push(this.slices*q+i,this.slices*q+i+1,this.slices*(q+1)+i);
-			this.indices.push(this.slices*q+i+1,this.slices*q+i,this.slices*(q+1)+i);
-			if (i != (this.slices - 1)) {
-				this.indices.push(this.slices*(q+1)+i+1,this.slices*(q+1)+i,this.slices*q+i+1);
-				this.indices.push(this.slices*(q+1)+i,this.slices*(q+1)+i+1,this.slices*q+i+1);
-			}
-			else {
-				this.indices.push(this.slices*q,this.slices*q+i+1,this.slices*q+i);
-				this.indices.push(this.slices*q+i+1,this.slices*q,this.slices*q+i);
-			}
-
+			this.vertices.push(
+					Math.cos(i * n)*(this.base - diference * q),
+					Math.sin(i * n)*(this.base - diference * q),
+					z);
 			
+			this.normals.push(Math.cos(i * n),Math.sin(i * n), 0);
+			
+			this.texCoords.push(sCoord,tCoord);
+			sCoord += sUpdate;
 		}
+		
+		this.texCoords.push(sCoord,tCoord);
+		tCoord -= tUpdate;
+		var z += (this.height/this.stacks);
 
 	}
+
+
+    for (var j = 0; j < this.stacks; j++) {
+        for (var i = 0; i < (this.slices); i++) {
+            this.indices.push((i + 1) % (this.slices) + j * this.slices,
+                i % (this.slices) + (j + 1) * this.slices,
+                i % (this.slices) + j * this.slices);
+
+            this.indices.push(i % (this.slices) + (j + 1) * this.slices,
+                (i + 1) % (this.slices) + j * this.slices,
+                (i + 1) % (this.slices) + (j + 1) * this.slices);
+        }
+
+    }
 
 
 	
@@ -81,3 +89,12 @@
 
  	this.initGLBuffers();
  };
+ 
+ MyCylinder.prototype.display = function() {
+
+    CGFobject.prototype.display.call(this);
+    this.baseCircle.display();
+    this.scene.rotate(Math.PI, 1, 0, 0);
+    this.scene.translate(0, 0, -this.height);
+    this.topCircle.display();
+};

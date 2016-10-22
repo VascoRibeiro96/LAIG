@@ -43,9 +43,9 @@
  	0, 1, 2, 
  	];
 
-	var a = Math.sqrt((x1-x2)*(x1-x2) + (y1-y2)*(y1-y2) + (z1-z2)*(z1-z2));
-    var b = Math.sqrt((x2-x3)*(x2-x3) + (y2-y3)*(y2-y3) + (z2-z3)*(z2-z3));
-    var c = Math.sqrt((x3-x1)*(x3-x1) + (y3-y1)*(y3-y1) + (z3-z1)*(z3-z1));
+	var a = Math.sqrt((this.x1-this.x2)*(this.x1-this.x2) + (this.y1-this.y2)*(this.y1-this.y2) + (this.z1-this.z2)*(z1-z2));
+    var b = Math.sqrt((this.x2-this.x3)*(this.x2-this.x3) + (this.y2-this.y3)*(this.y2-this.y3) + (this.z2-this.z3)*(this.z2-this.z3));
+    var c = Math.sqrt((this.x3-this.x1)*(this.x3-this.x1) + (this.y3-this.y1)*(this.y3-this.y1) + (this.z3-this.z1)*(this.z3-this.z1));
 
 
     var cosC = (a*a + b*b - c*c)/ (2*a*b);
@@ -57,12 +57,12 @@
         a,0];
 
     var vec1 = {}, vec2 = {}, vecf = {};
-    vec1.x = (x3-x1) / c;
-	vec1.y = (y3-y1) / c; 
-	vec1.z = (z3-z1) / c;
-    vec2.x = (x2-x1) / a;
-	vec2.y = (y2-y1) / a; 
-	vec2.z = (z2-z1) / a;
+    vec1.x = (this.x3-this.x1) / c;
+	vec1.y = (this.y3-this.y1) / c; 
+	vec1.z = (this.z3-this.z1) / c;
+    vec2.x = (this.x2-this.x1) / a;
+	vec2.y = (this.y2-this.y1) / a; 
+	vec2.z = (this.z2-this.z1) / a;
 
     vecf.x = vec1.y*vec2.z - vec1.z*vec2.y;
     vecf.y = vec1.z*vec2.x - vec1.x*vec2.z;
