@@ -1,22 +1,23 @@
 /**
- * MySphere
+ * MyTorus
  * @constructor
  */
-function MySphere(scene, radius, slices, stacks) {
+function MyTorus(scene, inner, outter, slices, loops) {
  	CGFobject.call(this,scene);
 
-	this.radius = radius;
+	this.inner = inner;
+	this.outter = outter;
 	this.slices = slices;
-	this.stacks = stacks;
+	this.loops = loops;
 
  	this.initBuffers();
 }
 
 
-MySphere.prototype = Object.create(CGFobject.prototype);
-MySphere.prototype.constructor = MySphere;
+MyTorus.prototype = Object.create(CGFobject.prototype);
+MyTorus.prototype.constructor = MyTorus;
 
-MySphere.prototype.initBuffers = function() {
+MyTorus.prototype.initBuffers = function() {
 
     this.vertices = [];
     this.indices = [];
@@ -56,7 +57,10 @@ MySphere.prototype.initBuffers = function() {
     for (var j = 0; j < this.stacks; j++) {
         for (var i = 0; i < this.slices; i++) {
            
-	       this.indices.push(
+		   var first = (j * (this.slices + 1)) + i;
+           var second = (j * (this.slices + 1)) + i + this.slices + 1;
+
+           this.indices.push(
 				(j * (this.slices + 1)) + i,
 				(j * (this.slices + 1)) + i + this.slices + 1 + 1,
 				(j * (this.slices + 1)) + i + this.slices + 1);

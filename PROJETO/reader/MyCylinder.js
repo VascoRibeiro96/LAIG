@@ -29,11 +29,8 @@
 
  MyCylinder.prototype.initBuffers = function() {
  	
-	
- 	var sides = this.slices;
- 	var stacks = this.stacks;
 
-	var n = 2*Math.PI / sides;
+	var n = 2*Math.PI / this.slices;
 
 	var diference = (this.base - this.top) / this.stacks;
 	this.vertices = [];
@@ -49,7 +46,7 @@
 		
 		var sCoord = 0;
 
-		for(var i = 0; i < sides; i++)
+		for(var i = 0; i < this.slices; i++)
 		{
 			this.vertices.push(
 					Math.cos(i * n)*(this.base - diference * q),
