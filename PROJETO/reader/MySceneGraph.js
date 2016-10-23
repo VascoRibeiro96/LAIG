@@ -841,7 +841,10 @@ MySceneGraph.prototype.loadComponents= function (){
 		for(var j = 0; j < materials.length; ++j){
 			var mId = materials[j];
 
-			component.addMaterial(this.materials[mId]);
+			if(mId == 'inherit')
+				component.inheritMaterial = true;
+			else
+				component.addMaterial(this.materials[mId]);
 		}
 
 		//process textures
@@ -850,6 +853,8 @@ MySceneGraph.prototype.loadComponents= function (){
 
 		for(var j = 0; j < textures.length; ++j){
 			var textID = textures[j];
+
+
 
 			component.setTexture(this.textures[textId]);
 		}
@@ -866,6 +871,7 @@ MySceneGraph.prototype.loadComponents= function (){
 
 			if(type == 'componentref'){
 				component.children.push(this.loadedComponents[cId]);
+				console.log("Child " + this.loadedComponents[cId] + " added to " + id);
 				this.loadedComponents[cId].parent = component;
 			}
 			else

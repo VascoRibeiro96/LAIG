@@ -1,7 +1,6 @@
 function MyComponent(scene, id) {
 
     this.texture;
-
     this.scene = scene;
     this.id = id;
     this.materials = [];
@@ -150,7 +149,10 @@ MyComponent.prototype.display = function(parent) {
         this.texture = parent.texture;
 
     if (this.inheritMaterial)
-        this.material = parent.material;
+        {
+            console.log(this);
+            this.material = parent.material;
+        }
     else
         this.material = this.materials[this.currentMaterial];
 
