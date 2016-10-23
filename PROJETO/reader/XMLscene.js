@@ -1,5 +1,7 @@
 function XMLscene() {
     CGFscene.call(this);
+	
+	
 }
 
 XMLscene.prototype = Object.create(CGFscene.prototype);
@@ -11,6 +13,7 @@ XMLscene.prototype.init = function (application) {
     this.primitives = {};
     this.components = {};
     this.parentComponent = null;
+	this.perspectiveind = 0;
 
     this.initCameras();
     this.initLights();
@@ -270,3 +273,18 @@ XMLscene.prototype.loadPrimitives = function(){
 
 	
 }
+
+XMLscene.prototype.switchPerspective = function() {
+	
+    if (this.perspectiveind === this.graph.perspectives.length) {
+        this.camera = this.perspective[this.perspectiveind];
+		this.perspectiveind = 0;
+    }
+	else{
+    this.camera = this.perspective[this.perspectiveind];
+	this.perspectiveind += 1;
+	}
+	
+};
+
+
