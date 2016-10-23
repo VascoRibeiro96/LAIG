@@ -124,8 +124,6 @@ XMLscene.prototype.graphLights = function() {
 		this.lights[i].setDiffuse(rD, gD, bD, aD);
 		this.lights[i].setSpecular(rS, gS, bS, aS);
 
-		console.log(this.lights[i]);
-
 
 		if(enabled)
 			this.lights[i].enable();
