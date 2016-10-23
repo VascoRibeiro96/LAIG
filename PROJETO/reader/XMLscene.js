@@ -8,6 +8,8 @@ XMLscene.prototype.constructor = XMLscene;
 XMLscene.prototype.init = function (application) {
     CGFscene.prototype.init.call(this, application);
 
+    this.primitives = {};
+
     this.initCameras();
     this.initLights();
 
@@ -53,6 +55,7 @@ XMLscene.prototype.onGraphLoaded = function ()
 	this.setAmbient(this.graph.illumination[2][0],this.graph.illumination[2][1],this.graph.illumination[2][2],this.graph.illumination[2][3]);
 	
 	this.graphLights();
+	this.loadPrimitives();
 };
 
 XMLscene.prototype.display = function () {
@@ -190,6 +193,68 @@ XMLscene.prototype.graphLights = function() {
 		// this.interface.newLight("spot", id);
 	}
 
+}
 
+XMLscene.prototype.loadPrimitives = function(){
 
+	var primitives = this.graph.primitives;
+
+	for(var i = 0; i < primitives.length; ++i){
+		var curPrimitive = primitives[i];
+
+		var id = curPrimitive[0];
+		var primitiveValues = curPrimitive[1];
+
+		var type = primitiveValues[0];
+
+		switch(type){
+			case 'rectangle':
+				var x1 = primitiveValues[1];
+				var y1 = primitiveValues[2];
+				var x2 = primitiveValues[3];
+				var y2 = primitiveValues[4];
+				this.primitives[id] = new MyRetangle(this, x1, y1, x2, y2);
+				break;
+
+			case 'triangle':
+				var x1 = primitiveValues[1];
+				var y1 = primitiveValues[2];
+				var z1 = primitiveValues[3];
+				var x2 = primitiveValues[4];
+				var y2 = primitiveValues[5];
+				var z2 = primitiveValues[6];
+				var x3 = primitiveValues[7];
+				var y3 = primitiveValues[8];
+				var z3 = primitiveValues[9];
+				this.primitives[id] = new MyTriangle(this, x1, y1, z1, x2, y2, z2, x3, y3, z3);
+				break;
+
+			case 'cylinder':
+				var base = primitiveValues[1];
+				var top = primitiveValues[2];
+				var height = primitiveValues[3];
+				var slices = primitiveValues[4];
+				var stacks = primitiveValues[5];
+				this.primitives[id] = new MyCylinder(this, base, top, height, slices, stacks);
+				break;
+
+			case 'sphere':
+				var radius = primitiveValues[1];
+				var slices = primitiveValues[2];
+				var stacks = primitiveValues[3];
+				this.primitives[id] = new MySphere(this, radius, slices, stacks);
+				break;
+
+			case 'torus':
+				var inner = primitiveValues[1];
+				var outer = primitiveValues[2];
+				var slices = primitiveValues[3];
+				var loops = primitiveValues[4];
+				this.primitives[id] = new MyTorus(this, inner, outer, slices, loops);
+
+			default:
+				console.log("Invalid primitive");
+				return;
+		}
+	}
 }

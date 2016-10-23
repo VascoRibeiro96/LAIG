@@ -18,8 +18,8 @@
 	this.slices = slices;
 	this.stacks = stacks;
 
-	this.baseCircle = newMyCircle(this.scene, this.slices, this.base);
-	this.topCircle = newMyCircle(this.scene, this.slices, this.top);
+	this.baseCircle = new MyCircle(this.scene, this.slices, this.base);
+	this.topCircle = new MyCircle(this.scene, this.slices, this.top);
 	
  	this.initBuffers();
  };
@@ -61,7 +61,7 @@
 		
 		this.texCoords.push(sCoord,tCoord);
 		tCoord -= tUpdate;
-		var z += (this.height/this.stacks);
+		z += (this.height/this.stacks);
 
 	}
 

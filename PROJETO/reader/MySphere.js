@@ -40,7 +40,7 @@ MySphere.prototype.initBuffers = function() {
 			
             this.normals.push(
 					Math.cos(angLat * j) * Math.sin(angVert * i), 
-					Math.cos(angVert * ind),
+					Math.cos(angVert * i),
 					Math.sin(angLat * j) * Math.sin(angVert * i));
 			
 			var s = 1 - (i / this.stacks);

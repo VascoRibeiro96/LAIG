@@ -28,10 +28,10 @@
  	this.initBuffers();
  };
 
- MyQuad.prototype = Object.create(CGFobject.prototype);
- MyQuad.prototype.constructor = MyQuad;
+ MyTriangle.prototype = Object.create(CGFobject.prototype);
+ MyTriangle.prototype.constructor = MyTriangle;
 
- MyQuad.prototype.initBuffers = function() {
+ MyTriangle.prototype.initBuffers = function() {
 
  	this.vertices = [
  	x1, y1, z1,
