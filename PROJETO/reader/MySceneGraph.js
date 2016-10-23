@@ -52,11 +52,17 @@ MySceneGraph.prototype.onXMLReady=function()
 		return;
 	}	
 	
+	error = this.parseIllumination(rootElement); 
+	if (error != null) {
+		this.onXMLError(error);
+		return;
+	}
+
 	error = this.parseLights(rootElement); 
 	if (error != null) {
 		this.onXMLError(error);
 		return;
-	}	
+	}		
 	
 	error = this.parseTextures(rootElement); 
 	if (error != null) {
@@ -200,13 +206,28 @@ MySceneGraph.prototype.parseIllumination= function (rootElement) {
 	if (elems.length != 1) {
 		return "Either zero or more than one 'illumination' element found.";
 	}
+
+	var illuminationElems = elems[0];
+
+
+	var doublesided = illuminationElems.attributes.getNamedItem('doublesided').value;
+	var local = illuminationElems.attributes.getNamedItem('local').value;
+
+	var ambient = illuminationElems.getElementsByTagName('ambient')[0];
+	var ambientValues = [];
+	ambientValues[0] = ambient.attributes.getNamedItem('r').value;
+	ambientValues[1] = ambient.attributes.getNamedItem('g').value;
+	ambientValues[2] = ambient.attributes.getNamedItem('b').value;
+	ambientValues[3] = ambient.attributes.getNamedItem('a').value;
+
+	var background = illuminationElems.getElementsByTagName('background')[0];
+	var backgroundValues = [];
+	backgroundValues[0] = background.attributes.getNamedItem('r').value;
+	backgroundValues[1] = background.attributes.getNamedItem('g').value;
+	backgroundValues[2] = background.attributes.getNamedItem('b').value;
+	backgroundValues[3] = background.attributes.getNamedItem('a').value;
 	
-	var doublesided = elems.attributes.getNamedItem('doublesided').value;
-	var local = elems.attributes.getNamedItem('local').value;
-	var ambient = elems.attributes.getNamedItem('ambient').value;
-	var background = elems.attributes.getNamedItem('background').value;
-	
-	this.illumination = [doublesided, local, ambient, background];
+	this.illumination = [doublesided, local, ambientValues, backgroundValues];
 }
 
 MySceneGraph.prototype.parseLights= function (rootElement) {
@@ -225,8 +246,8 @@ MySceneGraph.prototype.parseLights= function (rootElement) {
 	var spot = elems[0].getElementsByTagName('spot');
 	var idsOmni = [];
 	var idsSpot = [];
-	var omni = []; 
-	var spot = [];
+	var omniValues = []; 
+	var spotValues = [];
 	
 	for(i = 0; i < omni.length; ++i){
 		var curOmni = omni[i];
@@ -235,35 +256,87 @@ MySceneGraph.prototype.parseLights= function (rootElement) {
 		idsOmni[i] = id;
 		
 		var enabled = curOmni.attributes.getNamedItem('enabled').value;
-		var location = curOmni.attributes.getNamedItem('location').value;
-		var ambient = curOmni.attributes.getNamedItem('ambient').value;
-		var diffuse = curOmni.attributes.getNamedItem('diffuse').value;
-		var specular = curOmni.attributes.getNamedItem('specular').value;
+
+		var location = curOmni.getElementsByTagName('location')[0];
+		var locationValues = [];
+		locationValues[0] = location.attributes.getNamedItem('x').value;
+		locationValues[1] = location.attributes.getNamedItem('y').value;
+		locationValues[2] = location.attributes.getNamedItem('z').value;
+		locationValues[3] = location.attributes.getNamedItem('w').value;
+
+		var ambient = curOmni.getElementsByTagName('ambient')[0];
+		var ambientValues = [];
+		ambientValues[0] = ambient.attributes.getNamedItem('r').value;
+		ambientValues[1] = ambient.attributes.getNamedItem('g').value;
+		ambientValues[2] = ambient.attributes.getNamedItem('b').value;
+		ambientValues[3] = ambient.attributes.getNamedItem('a').value;
+
+		var diffuse = curOmni.getElementsByTagName('diffuse')[0];
+		var diffuseValues = [];
+		diffuseValues[0] = diffuse.attributes.getNamedItem('r').value;
+		diffuseValues[1] = diffuse.attributes.getNamedItem('g').value;
+		diffuseValues[2] = diffuse.attributes.getNamedItem('b').value;
+		diffuseValues[3] = diffuse.attributes.getNamedItem('a').value;
+
+		var specular = curOmni.getElementsByTagName('specular')[0];
+		var specularValues = [];
+		specularValues[0] = specular.attributes.getNamedItem('r').value;
+		specularValues[1] = specular.attributes.getNamedItem('g').value;
+		specularValues[2] = specular.attributes.getNamedItem('b').value;
+		specularValues[3] = specular.attributes.getNamedItem('a').value;
 		
-		curOmni = [id, enabled, location, ambient, diffuse, specular];
-		omni.push(curOmni);
+		curOmni = [id, enabled, locationValues, ambientValues, diffuseValues, specularValues];
+		omniValues.push(curOmni);
 	}
-	
 	for(i = 0; i < spot.length; ++i){
 		var curSpot = spot[i];
 
 		var id = curSpot.attributes.getNamedItem('id').value;
 		idsSpot[i] = id;
 		
-		var enabled = curcurSpot.attributes.getNamedItem('enabled').value;
+		var enabled = curSpot.attributes.getNamedItem('enabled').value;
 		var angle = curSpot.attributes.getNamedItem('angle').value;
 		var exponent = curSpot.attributes.getNamedItem('exponent').value;
-		var target = curSpot.attributes.getNamedItem('target').value;
-		var location = curSpot.attributes.getNamedItem('location').value;
-		var ambient = curSpot.attributes.getNamedItem('ambient').value;
-		var diffuse = curSpot.attributes.getNamedItem('diffuse').value;
-		var specular = curSpot.attributes.getNamedItem('specular').value;
+
+
+		var target = curSpot.getElementsByTagName('target')[0];	
+		var targetValues = [];
+		targetValues[0] = target.attributes.getNamedItem('x').value;
+		targetValues[1] = target.attributes.getNamedItem('y').value;
+		targetValues[2] = target.attributes.getNamedItem('z').value;
+
+		var location = curSpot.getElementsByTagName('location')[0];
+		var locationValues = [];
+		locationValues[0] = location.attributes.getNamedItem('x').value;
+		locationValues[1] = location.attributes.getNamedItem('y').value;
+		locationValues[2] = location.attributes.getNamedItem('z').value;
+
+		var ambient = curSpot.getElementsByTagName('ambient')[0];
+		var ambientValues = [];
+		ambientValues[0] = ambient.attributes.getNamedItem('r').value;
+		ambientValues[1] = ambient.attributes.getNamedItem('g').value;
+		ambientValues[2] = ambient.attributes.getNamedItem('b').value;
+		ambientValues[3] = ambient.attributes.getNamedItem('a').value;
+
+		var diffuse = curSpot.getElementsByTagName('diffuse')[0];
+		var diffuseValues = [];
+		diffuseValues[0] = diffuse.attributes.getNamedItem('r').value;
+		diffuseValues[1] = diffuse.attributes.getNamedItem('g').value;
+		diffuseValues[2] = diffuse.attributes.getNamedItem('b').value;
+		diffuseValues[3] = diffuse.attributes.getNamedItem('a').value;
+
+		var specular = curSpot.getElementsByTagName('specular')[0];
+		var specularValues = [];
+		specularValues[0] = specular.attributes.getNamedItem('r').value;
+		specularValues[1] = specular.attributes.getNamedItem('g').value;
+		specularValues[2] = specular.attributes.getNamedItem('b').value;
+		specularValues[3] = specular.attributes.getNamedItem('a').value;
 		
-		curSpot = [id, enabled, ,angle, exponent, target, location, ambient, diffuse, specular];
-		spot.push(curSpot);
+		curSpot = [id, enabled, angle, exponent, targetValues, locationValues, ambientValues, diffuseValues, specularValues];
+		spotValues.push(curSpot);
 	}
 
-	this.lights = [omni, spot];
+	this.lights = [omniValues, spotValues];
 	
 	if(this.compareIds(idsOmni) == "Equal Ids"){
 		console.log("Equal Ids in omni lights!\n");
@@ -425,8 +498,7 @@ MySceneGraph.prototype.parseTransformations= function (rootElement) {
 					break;
 
 				default:
-					console.log("Invalid transformation: " + type + "\n");
-					return "Invalid transformation";
+					return "Invalid transformation: " + type + "\n";
 			}
 
 			transformationValues.push([id, op]);
@@ -530,8 +602,7 @@ MySceneGraph.prototype.parsePrimitives= function (rootElement) {
 	}
 
 	if(this.compareIds(ids) == "Equal Ids"){
-			console.log("Equal Ids in primitives!\n");
-			return "Equal Ids";
+			return "Equal Ids in primitives";
 		}
 }
 
@@ -599,8 +670,7 @@ MySceneGraph.prototype.parseComponents= function (rootElement) {
 					break;
 
 				default:
-					console.log("Invalid transformation: " + type + "\n");
-					return "Invalid transformation";
+					return "Invalid transformation: " + type + "\n";
 					break;
 
 			}
@@ -653,8 +723,6 @@ MySceneGraph.prototype.parseComponents= function (rootElement) {
 			}
 
 			var childComponents = children[0].children;
-
-			console.log(childComponents);
 
 			if(childComponents.length < 1){
 				return "There needs to be at least one child inside the 'children' block in each component";
