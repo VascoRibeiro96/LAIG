@@ -9,8 +9,8 @@ XMLscene.prototype.init = function (application) {
     CGFscene.prototype.init.call(this, application);
 
     this.initCameras();
-
     this.initLights();
+
 
     this.gl.clearColor(0.0, 0.0, 0.0, 1.0);
 
@@ -27,6 +27,11 @@ XMLscene.prototype.initLights = function () {
 	this.lights[0].setPosition(5, 5, 3, 1);
     this.lights[0].setDiffuse(1.0,1.0,1.0,1.0);
     this.lights[0].update();
+
+
+    //Default Lights
+    this.lights[0].setVisible(true);
+    this.lights[0].enable();
 };
 
 XMLscene.prototype.initCameras = function () {
@@ -45,8 +50,9 @@ XMLscene.prototype.setDefaultAppearance = function () {
 XMLscene.prototype.onGraphLoaded = function () 
 {
 	this.gl.clearColor(this.graph.illumination[3][0],this.graph.illumination[3][1],this.graph.illumination[3][2],this.graph.illumination[3][3]);
-	this.lights[0].setVisible(true);
-    this.lights[0].enable();
+	this.setAmbient(this.graph.illumination[2][0],this.graph.illumination[2][1],this.graph.illumination[2][2],this.graph.illumination[2][3]);
+	
+	this.graphLights();
 };
 
 XMLscene.prototype.display = function () {
@@ -74,8 +80,118 @@ XMLscene.prototype.display = function () {
 	// only get executed after the graph has loaded correctly.
 	// This is one possible way to do it
 	if (this.graph.loadedOk)
-	{
-		this.lights[0].update();
-	};	
+		this.updateAllLights();
 };
 
+XMLscene.prototype.updateAllLights = function() {
+	for (var i = 0; i < this.lights.length; ++i)
+    this.lights[i].update();
+}
+
+XMLscene.prototype.graphLights = function() {
+
+	var omniLights = this.graph.lights[0];
+	var j = 0;
+
+	for(i = 0; i < omniLights.length; ++i, ++j){
+		var light = omniLights[i];
+
+		var id = light[0];
+		var enabled = light[1];
+
+		var x = light[2][0];
+		var y = light[2][1];
+		var z = light[2][2];
+		var w = light[2][3];
+
+		var rA = light[3][0];
+		var gA = light[3][1];
+		var bA = light[3][2];
+		var aA = light[3][3];
+
+		var rD = light[4][0];
+		var gD = light[4][1];
+		var bD = light[4][2];
+		var aD = light[4][3];
+
+		var rS = light[5][0];
+		var gS = light[5][1];
+		var bS = light[5][2];
+		var aS = light[5][3];
+
+		this.lights[i].setPosition(x, y, z, w);
+		this.lights[i].setAmbient(rA, gA, bA, aA);
+		this.lights[i].setDiffuse(rD, gD, bD, aD);
+		this.lights[i].setSpecular(rS, gS, bS, aS);
+
+		console.log(this.lights[i]);
+
+
+		if(enabled)
+			this.lights[i].enable();
+		else
+			this.lights[i].disable();
+
+		this.lights[i].setVisible(true);
+		this.lights[i].update();
+
+		// Add to Interface
+		// this.interface.newLight("omni", id);
+	}
+
+	var spotLights = this.graph.lights[1];
+
+	for(var k = 0; k < spotLights.length; ++k){
+		var light = spotLights[i];
+
+		var id = light[0];
+		var enabled = light[1];
+		var angle = light[2];
+		var exponent = light[3];
+
+		var xT = light[4][0];
+		var yT = light[4][1];
+		var zT = light[4][2];
+
+		var x = light[5][0];
+		var y = light[5][1];
+		var z = light[5][2];
+
+
+		var rA = light[6][0];
+		var gA = light[6][1];
+		var BA = light[6][2];
+		var aA = light[6][3];
+
+		var rD = light[7][0];
+		var gD = light[7][1];
+		var bD = light[7][2];
+		var aD = light[7][3];
+
+		var rS = light[8][0];
+		var gS = light[8][1];
+		var bS = light[8][2];
+		var aS = light[8][3];
+
+		this.lights[k + j].setPosition(x, y, z);
+		this.lights[k + j].setSpotDirection(xT, yT, zT);
+		//this.lights[i].setAngle(angle);
+		this.lights[k + j].setSpotExponent(exponent);
+		this.lights[k + j].setAmbient(rA, gA, bA, aA);
+		this.lights[k + j].setDiffuse(rD, gD, bD, aD);
+		this.lights[k + j].setSpecular(rS, gS, bS, aS);
+
+		if(enabled)
+			this.lights[k + j].enable();
+		else
+			this.lights[k + j].disable();
+
+		this.lights[k + j].setVisible(true);
+		this.lights[k + j].update();
+		// Add to Interface
+		// this.interface.newLight("spot", id);
+	}
+
+
+
+}

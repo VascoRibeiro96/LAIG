@@ -5,7 +5,7 @@
 
     <!-- deve definir-se um objeto para raiz do grafo , assim -->
     <!-- como o comprimento dos tres eixos (cilindros) -->
-    <scene root="root" axis_length="10.0" />
+    <scene root="root" axis_length="5.0" />
     
     
     <views default="firstView" >
@@ -39,13 +39,13 @@
     <lights>
     
         <omni id="topRed" enabled="1" >
-            <location x="0.0" y="0.0" z="20.0" w="15.0" />
+            <location x="5.0" y="5.0" z="3.0" w="3.0" />
             <ambient r="0.8" g="0.0" b="0.0" a="1.0" />
             <diffuse r="0.8" g="0.0" b="0.0" a="1.0" />
             <specular r="0.8" g="0.0" b=".0" a="1.0" />
         </omni>
         
-        <spot id="firstSpot" enabled="1" angle="2.5" exponent="1.1">
+        <spot id="firstSpot" enabled="1" angle="2.5" exponent="0.5">
             <target x="0" y="0" z="0" />
             <location x="15" y="15" z="15" />
             <ambient r="0.4" g="0.4" b="0.4" a="1.0" />
@@ -53,7 +53,7 @@
             <specular r="0.4" g="0.4" b="0.4" a="1.0" />
         </spot>
 
-        <spot id="secondSpot" enabled="0" angle="2.5" exponent="1.1">
+        <spot id="secondSpot" enabled="0" angle="2.5" exponent="0.5">
             <target x="5.0" y="5.0" z="50" />
             <location x="0.0" y="0.0" z="0.0" />
             <ambient r="0.4" g="0.4" b="0.4" a="1.0" />
@@ -61,7 +61,7 @@
             <specular r="0.4" g="0.4" b="0.4" a="1.0" />
         </spot>
 
-        <spot id="greenSpot" enabled="1" angle="2.5" exponent="1.1">
+        <spot id="greenSpot" enabled="0" angle="2.5" exponent="0.5">
             <target x="10.0" y="0.0" z="2.0" />
             <location x="15.0" y="15.0" z="15.0" />
             <ambient r="0.0" g="0.8" b="0.0" a="1.0" />
@@ -70,7 +70,7 @@
         </spot>
 
         <omni id="sidePurple" enabled="1" >
-            <location x="20.0" y="0.0" z="0.0" w="5.0" />
+            <location x="4.0" y="0.0" z="0.0" w="5.0" />
             <ambient r="0.4" g="0.0" b="0.6" a="1.0" />
             <diffuse r="0.4" g="0.0" b="0.6" a="1.0" />
             <specular r="0.4" g="0.0" b="0.6" a="1.0" />

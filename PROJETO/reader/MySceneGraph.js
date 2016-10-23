@@ -246,8 +246,8 @@ MySceneGraph.prototype.parseLights= function (rootElement) {
 	var spot = elems[0].getElementsByTagName('spot');
 	var idsOmni = [];
 	var idsSpot = [];
-	var omni = []; 
-	var spot = [];
+	var omniValues = []; 
+	var spotValues = [];
 	
 	for(i = 0; i < omni.length; ++i){
 		var curOmni = omni[i];
@@ -256,35 +256,87 @@ MySceneGraph.prototype.parseLights= function (rootElement) {
 		idsOmni[i] = id;
 		
 		var enabled = curOmni.attributes.getNamedItem('enabled').value;
-		var location = curOmni.attributes.getNamedItem('location').value;
-		var ambient = curOmni.attributes.getNamedItem('ambient').value;
-		var diffuse = curOmni.attributes.getNamedItem('diffuse').value;
-		var specular = curOmni.attributes.getNamedItem('specular').value;
+
+		var location = curOmni.getElementsByTagName('location')[0];
+		var locationValues = [];
+		locationValues[0] = location.attributes.getNamedItem('x').value;
+		locationValues[1] = location.attributes.getNamedItem('y').value;
+		locationValues[2] = location.attributes.getNamedItem('z').value;
+		locationValues[3] = location.attributes.getNamedItem('w').value;
+
+		var ambient = curOmni.getElementsByTagName('ambient')[0];
+		var ambientValues = [];
+		ambientValues[0] = ambient.attributes.getNamedItem('r').value;
+		ambientValues[1] = ambient.attributes.getNamedItem('g').value;
+		ambientValues[2] = ambient.attributes.getNamedItem('b').value;
+		ambientValues[3] = ambient.attributes.getNamedItem('a').value;
+
+		var diffuse = curOmni.getElementsByTagName('diffuse')[0];
+		var diffuseValues = [];
+		diffuseValues[0] = diffuse.attributes.getNamedItem('r').value;
+		diffuseValues[1] = diffuse.attributes.getNamedItem('g').value;
+		diffuseValues[2] = diffuse.attributes.getNamedItem('b').value;
+		diffuseValues[3] = diffuse.attributes.getNamedItem('a').value;
+
+		var specular = curOmni.getElementsByTagName('specular')[0];
+		var specularValues = [];
+		specularValues[0] = specular.attributes.getNamedItem('r').value;
+		specularValues[1] = specular.attributes.getNamedItem('g').value;
+		specularValues[2] = specular.attributes.getNamedItem('b').value;
+		specularValues[3] = specular.attributes.getNamedItem('a').value;
 		
-		curOmni = [id, enabled, location, ambient, diffuse, specular];
-		omni.push(curOmni);
+		curOmni = [id, enabled, locationValues, ambientValues, diffuseValues, specularValues];
+		omniValues.push(curOmni);
 	}
-	
 	for(i = 0; i < spot.length; ++i){
 		var curSpot = spot[i];
 
 		var id = curSpot.attributes.getNamedItem('id').value;
 		idsSpot[i] = id;
 		
-		var enabled = curcurSpot.attributes.getNamedItem('enabled').value;
+		var enabled = curSpot.attributes.getNamedItem('enabled').value;
 		var angle = curSpot.attributes.getNamedItem('angle').value;
 		var exponent = curSpot.attributes.getNamedItem('exponent').value;
-		var target = curSpot.attributes.getNamedItem('target').value;
-		var location = curSpot.attributes.getNamedItem('location').value;
-		var ambient = curSpot.attributes.getNamedItem('ambient').value;
-		var diffuse = curSpot.attributes.getNamedItem('diffuse').value;
-		var specular = curSpot.attributes.getNamedItem('specular').value;
+
+
+		var target = curSpot.getElementsByTagName('target')[0];	
+		var targetValues = [];
+		targetValues[0] = target.attributes.getNamedItem('x').value;
+		targetValues[1] = target.attributes.getNamedItem('y').value;
+		targetValues[2] = target.attributes.getNamedItem('z').value;
+
+		var location = curSpot.getElementsByTagName('location')[0];
+		var locationValues = [];
+		locationValues[0] = location.attributes.getNamedItem('x').value;
+		locationValues[1] = location.attributes.getNamedItem('y').value;
+		locationValues[2] = location.attributes.getNamedItem('z').value;
+
+		var ambient = curSpot.getElementsByTagName('ambient')[0];
+		var ambientValues = [];
+		ambientValues[0] = ambient.attributes.getNamedItem('r').value;
+		ambientValues[1] = ambient.attributes.getNamedItem('g').value;
+		ambientValues[2] = ambient.attributes.getNamedItem('b').value;
+		ambientValues[3] = ambient.attributes.getNamedItem('a').value;
+
+		var diffuse = curSpot.getElementsByTagName('diffuse')[0];
+		var diffuseValues = [];
+		diffuseValues[0] = diffuse.attributes.getNamedItem('r').value;
+		diffuseValues[1] = diffuse.attributes.getNamedItem('g').value;
+		diffuseValues[2] = diffuse.attributes.getNamedItem('b').value;
+		diffuseValues[3] = diffuse.attributes.getNamedItem('a').value;
+
+		var specular = curSpot.getElementsByTagName('specular')[0];
+		var specularValues = [];
+		specularValues[0] = specular.attributes.getNamedItem('r').value;
+		specularValues[1] = specular.attributes.getNamedItem('g').value;
+		specularValues[2] = specular.attributes.getNamedItem('b').value;
+		specularValues[3] = specular.attributes.getNamedItem('a').value;
 		
-		curSpot = [id, enabled, ,angle, exponent, target, location, ambient, diffuse, specular];
-		spot.push(curSpot);
+		curSpot = [id, enabled, angle, exponent, targetValues, locationValues, ambientValues, diffuseValues, specularValues];
+		spotValues.push(curSpot);
 	}
 
-	this.lights = [omni, spot];
+	this.lights = [omniValues, spotValues];
 	
 	if(this.compareIds(idsOmni) == "Equal Ids"){
 		console.log("Equal Ids in omni lights!\n");
