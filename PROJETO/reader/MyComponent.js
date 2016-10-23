@@ -1,17 +1,55 @@
-function Component(scene, id) {
+function Component(scene) {
     /* Temporarily holds the texture id and after updateTextures is called
      * updates the texture to the texture object.
      */
     this.texture;
 
     this.scene = scene;
-    this.id = id;
     this.materials = [];
     this.inheritMaterial = false;
     this.inheritTexture = false;
     this.children = [];
     this.currentMaterial = 0;
     this.parent = null;
+}
+
+Component.prototype.transform = function(transformation){
+
+    for(var i = 0; i < transformation.length; ++i){
+        var curTransformation = transformation[i];
+            var type = curTransformation[0];
+
+            switch(type){
+                case 'rotate':
+                    var angle = curTransformation[1];
+                    var axis = curTransformation[2];
+                    this.rotate(angle, axis);
+                    break;
+
+                case 'scale':
+                    var x = curTransformation[1];
+                    var y = curTransformation[2];
+                    var z = curTransformation[3];
+                    this.scale(x, y, z);
+                    break;
+
+                case 'translate':
+                    var x = curTransformation[1];
+                    var y = curTransformation[2];
+                    var z = curTransformation[3];
+                    this.translate(x, y, z);                   
+                    break;
+
+                case 'ref':
+                    var id = curTransformation[1];
+                    this.transform(this.transformations[id]);
+                    break;
+
+                default:
+                    return "Invalid transformation: " + type;
+            }
+    }
+
 }
 
 Component.prototype.rotate = function(angle, axis) {

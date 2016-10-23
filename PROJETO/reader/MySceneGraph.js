@@ -16,9 +16,10 @@ function MySceneGraph(filename, scene) {
 	this.lights = [];
 	this.textures = [];
 	this.materials = [];
-	this.transformations = [];
+	this.transformations = {};
 	this.primitives = [];
 	this.components = [];
+	this.loadedComponents = {};
 		
 	// File reading 
 	this.reader = new CGFXMLreader();
@@ -501,10 +502,10 @@ MySceneGraph.prototype.parseTransformations= function (rootElement) {
 					return "Invalid transformation: " + type + "\n";
 			}
 
-			transformationValues.push([id, op]);
+			transformationValues.push(op);
 		}
 
-		this.transformations.push(transformationValues);
+		this.transformations[id] = transformationValues;
 
 	}
 
@@ -774,5 +775,57 @@ MySceneGraph.prototype.onXMLError=function (message) {
 	console.error("DSX Loading Error: "+message);	
 	this.loadedOk=false;
 };
+
+MySceneGraph.prototype.loadComponents= function (){
+
+	for(var i = 0; i < this.components.length; ++i){
+		var curComponent = this.component[i];
+
+		var id = curComponent[0];
+
+		var component = new MyComponent(this.scene);
+
+		//process transformations
+
+		var transformations = curComponent[1];
+		for(var j = 0; j < transformations.length; ++j){
+			var curTransformation = transformations[i];
+			var type = curTransformation[0];
+
+			switch(type){
+				case 'rotate':
+					var angle = curTransformation[1];
+					var axis = curTransformation[2];
+					component.rotate(angle, axis);
+					break;
+
+				case 'scale':
+					var x = curTransformation[1];
+					var y = curTransformation[2];
+					var z = curTransformation[3];
+					component.scale(x, y, z);
+					break;
+
+				case 'translate':
+					var x = curTransformation[1];
+					var y = curTransformation[2];
+					var z = curTransformation[3];
+					component.translate(x, y, z);					
+					break;
+
+				case 'ref':
+					var id = curTransformation[1];
+					component.transform(this.transformations[id]);
+					break;
+
+				default:
+					return "Invalid transformation: " + type;
+			}
+
+
+		}
+	}
+
+}
 
 
