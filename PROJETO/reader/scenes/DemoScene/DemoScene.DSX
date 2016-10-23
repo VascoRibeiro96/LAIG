@@ -82,10 +82,10 @@
     
     <textures>
 
-        <texture id="camo1" file="camo1.jpg" length_s="1.0" length_t="1.5" /> 
-        <texture id="camo2" file="camo2.jpg" length_s="1.0" length_t="1.5" />  
-        <texture id="simpleYellow" file="yellow.png" length_s="2.0" length_t="3.0" /> 
-        <texture id="fractal" file="fractal.jpg" length_s="3.0" length_t="3.0" />
+        <texture id="camo1" file="scenes/DemoScene/camo1.jpg" length_s="1.0" length_t="1.5" /> 
+        <texture id="camo2" file="scenes/DemoScene/camo2.jpg" length_s="1.0" length_t="1.5" />  
+        <texture id="simpleYellow" file="scenes/DemoScene/yellow.png" length_s="2.0" length_t="3.0" /> 
+        <texture id="fractal" file="scenes/DemoScene/fractal.jpg" length_s="3.0" length_t="3.0" />
 
     </textures>
 

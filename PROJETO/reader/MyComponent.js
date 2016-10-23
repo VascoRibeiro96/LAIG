@@ -1,4 +1,4 @@
-function Component(scene) {
+function MyComponent(scene) {
     /* Temporarily holds the texture id and after updateTextures is called
      * updates the texture to the texture object.
      */
@@ -13,7 +13,7 @@ function Component(scene) {
     this.parent = null;
 }
 
-Component.prototype.transform = function(transformation){
+MyComponent.prototype.transform = function(transformation){
 
     for(var i = 0; i < transformation.length; ++i){
         var curTransformation = transformation[i];
@@ -52,7 +52,7 @@ Component.prototype.transform = function(transformation){
 
 }
 
-Component.prototype.rotate = function(angle, axis) {
+MyComponent.prototype.rotate = function(angle, axis) {
 
     var x = 0;
     var y = 0;
@@ -80,7 +80,7 @@ Component.prototype.rotate = function(angle, axis) {
 }
 
 
-Component.prototype.translate = function(x, y, z) {
+MyComponent.prototype.translate = function(x, y, z) {
     
     this.scene.pushMatrix();
     this.scene.setMatrix(this.transformationMatrix);
@@ -90,7 +90,7 @@ Component.prototype.translate = function(x, y, z) {
 }
 
 
-Component.prototype.scale = function(x, y, z) {
+MyComponent.prototype.scale = function(x, y, z) {
     this.scene.pushMatrix();
     this.scene.setMatrix(this.transformationMatrix);
     this.scene.scale(x, y, z);
@@ -99,23 +99,23 @@ Component.prototype.scale = function(x, y, z) {
 }
 
 
-Component.prototype.addMaterial = function(material) {
+MyComponent.prototype.addMaterial = function(material) {
     this.materials.push(material);
 }
 
 
-Component.prototype.setTexture = function(texture) {
+MyComponent.prototype.setTexture = function(texture) {
     this.texture = texture;
 }
 
 
-Component.prototype.addChild = function(component) {
+MyComponent.prototype.addChild = function(component) {
     this.children.push(component);
     component.parent = this;
 }
 
 
-Component.prototype.updateTextures = function(textures) {
+MyComponent.prototype.updateTextures = function(textures) {
     switch (this.texture) {
         case 'inherit':
             if(this.parent == null)
@@ -141,7 +141,7 @@ Component.prototype.updateTextures = function(textures) {
 Recursive Display of components
 **/
 
-Component.prototype.display = function(parent) {
+MyComponent.prototype.display = function(parent) {
     this.scene.pushMatrix();
 
     this.scene.multMatrix(this.transformation.getMatrix());
@@ -168,7 +168,7 @@ Component.prototype.display = function(parent) {
     this.scene.popMatrix();
 }
 
-Component.prototype.switchMaterials = function() {
+MyComponent.prototype.switchMaterials = function() {
     this.nextMaterial();
 
     for (let child of this.children) {
@@ -178,7 +178,7 @@ Component.prototype.switchMaterials = function() {
 
 };
 
-Component.prototype.nextMaterial = function() {
+MyComponent.prototype.nextMaterial = function() {
     if (this.inheritMaterial)
         return;
 

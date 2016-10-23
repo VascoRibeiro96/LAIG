@@ -14,8 +14,8 @@ function MySceneGraph(filename, scene) {
 	this.perspectives = [];
 	this.illumination = [];
 	this.lights = [];
-	this.textures = [];
-	this.materials = [];
+	this.textures = {};
+	this.materials = {};
 	this.transformations = {};
 	this.primitives = [];
 	this.components = [];
@@ -186,8 +186,8 @@ MySceneGraph.prototype.parseView= function (rootElement) {
 
 		to = [xt, yt, zt];
 		
-		curPerspective = [id, near, far, angle, from, to];
-		this.perspectives.push(curPerspective);
+		this.perspectives.push(new CGFcamera(angle * (Math.PI /180) , near, far, from, to));
+
 	}
 	
 	if(this.compareIds(ids) == "Equal Ids"){
@@ -376,8 +376,7 @@ MySceneGraph.prototype.parseTextures= function (rootElement) {
 		var length_s = curTexture.attributes.getNamedItem('length_s').value;
 		var length_t = curTexture.attributes.getNamedItem('length_t').value;
 		
-		curTexture = [id, file, length_s, length_t];
-		this.textures.push(curTexture);
+		this.textures[id] = new MyTexture(this.scene, file, length_s, length_t);
 	}
 	
 	if(this.compareIds(ids) == "Equal Ids"){
@@ -390,7 +389,7 @@ MySceneGraph.prototype.parseTextures= function (rootElement) {
 MySceneGraph.prototype.parseMaterials= function (rootElement) {
 	
 
-	//TEMPORARIO -- NAO PERMITE DEBUGGING
+	//FIX -- NAO PERMITE DEBUGGING
 	var elems =  rootElement.getElementsByTagName('materials');
 
 /*
@@ -423,14 +422,20 @@ MySceneGraph.prototype.parseMaterials= function (rootElement) {
 			var a = materialChidren[j].attributes.getNamedItem('a').value;
 			var type = materialChidren[j].tagName;
 
-			var curAttribute = [type, r, g, b, a];
+			var curAttribute = [r, g, b, a];
 			materialAttributes.push(curAttribute);
 		}
 
 		var shineness = materialChidren[4].attributes.getNamedItem('value').value;
-		materialAttributes.push(shineness);
 
-		this.materials.push(materialAttributes);
+		var m = new CGFappearance(this.scene);
+        m.setEmission(materialAttributes[0][0], materialAttributes[0][1], materialAttributes[0][2], materialAttributes[0][3]);
+        m.setAmbient(materialAttributes[1][0], materialAttributes[1][1], materialAttributes[1][2], materialAttributes[1][3]);
+        m.setDiffuse(materialAttributes[2][0], materialAttributes[2][1], materialAttributes[2][2], materialAttributes[2][3]);
+        m.setSpecular(materialAttributes[3][0], materialAttributes[3][1], materialAttributes[3][2], materialAttributes[3][3]);
+        m.setShininess(shineness);
+
+		this.materials[id] = m;
 	}
 	
 	if(this.compareIds(ids) == "Equal Ids"){
@@ -789,7 +794,7 @@ MySceneGraph.prototype.loadComponents= function (){
 
 		var transformations = curComponent[1];
 		for(var j = 0; j < transformations.length; ++j){
-			var curTransformation = transformations[i];
+			var curTransformation = transformations[j];
 			var type = curTransformation[0];
 
 			switch(type){
@@ -814,8 +819,8 @@ MySceneGraph.prototype.loadComponents= function (){
 					break;
 
 				case 'ref':
-					var id = curTransformation[1];
-					component.transform(this.transformations[id]);
+					var tId = curTransformation[1];
+					component.transform(this.transformations[tId]);
 					break;
 
 				default:
@@ -824,7 +829,47 @@ MySceneGraph.prototype.loadComponents= function (){
 
 
 		}
+
+
+		//process materials
+
+		var materials = curComponent[2];
+
+		for(var j = 0; j < materials.length; ++j){
+			var mId = materials[j];
+
+			component.addMaterial(this.materials[mId]);
+		}
+
+		//process textures
+
+		var textures = curComponent[3];
+
+		for(var j = 0; j < textures.length; ++j){
+			var textID = textures[j];
+
+			component.setTexture(this.textures[textId]);
+		}
+
+		//process children
+
+		var children = curComponent[4];
+
+		for(var j = 0; j < children.length; ++j){
+			var curChild = children[j];
+
+			var type = curChild[0];
+			var cId = curChild[1];
+
+			if(type == 'componentref')
+				component.push(this.components[cId]);
+			else
+				component.push(this.primitives[cId]);
+		}
 	}
+
+
+
 
 }
 
