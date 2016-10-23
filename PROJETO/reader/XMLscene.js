@@ -277,12 +277,12 @@ XMLscene.prototype.loadPrimitives = function(){
 XMLscene.prototype.switchPerspective = function() {
 	
     if (this.perspectiveind === this.graph.perspectives.length) {
-        this.camera = this.perspective[this.perspectiveind];
+        this.camera = this.graph.perspectives[this.perspectiveind];
 		this.perspectiveind = 0;
     }
-	else{
-    this.camera = this.perspective[this.perspectiveind];
-	this.perspectiveind += 1;
+	else {
+    	this.camera = this.graph.perspectives[this.perspectiveind];
+		this.perspectiveind += 1;
 	}
 	
 };
