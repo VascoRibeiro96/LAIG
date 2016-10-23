@@ -9,6 +9,7 @@ XMLscene.prototype.init = function (application) {
     CGFscene.prototype.init.call(this, application);
 
     this.primitives = {};
+    this.components = {};
 
     this.initCameras();
     this.initLights();
@@ -75,6 +76,7 @@ XMLscene.prototype.display = function () {
 	// Draw axis
 	this.axis.display();
 
+
 	this.setDefaultAppearance();
 	
 	// ---- END Background, camera and axis setup
@@ -82,8 +84,10 @@ XMLscene.prototype.display = function () {
 	// it is important that things depending on the proper loading of the graph
 	// only get executed after the graph has loaded correctly.
 	// This is one possible way to do it
-	if (this.graph.loadedOk)
+	if (this.graph.loadedOk){
 		this.updateAllLights();
+		this.parentComponent.display();
+	}
 };
 
 XMLscene.prototype.updateAllLights = function() {
@@ -257,4 +261,6 @@ XMLscene.prototype.loadPrimitives = function(){
 				return;
 		}
 	}
+
+	
 }
