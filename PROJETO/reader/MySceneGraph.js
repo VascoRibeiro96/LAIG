@@ -425,8 +425,7 @@ MySceneGraph.prototype.parseTransformations= function (rootElement) {
 					break;
 
 				default:
-					console.log("Invalid transformation: " + type + "\n");
-					return "Invalid transformation";
+					return "Invalid transformation: " + type + "\n";
 			}
 
 			transformationValues.push([id, op]);
@@ -530,8 +529,7 @@ MySceneGraph.prototype.parsePrimitives= function (rootElement) {
 	}
 
 	if(this.compareIds(ids) == "Equal Ids"){
-			console.log("Equal Ids in primitives!\n");
-			return "Equal Ids";
+			return "Equal Ids in primitives";
 		}
 }
 
@@ -599,8 +597,7 @@ MySceneGraph.prototype.parseComponents= function (rootElement) {
 					break;
 
 				default:
-					console.log("Invalid transformation: " + type + "\n");
-					return "Invalid transformation";
+					return "Invalid transformation: " + type + "\n";
 					break;
 
 			}
@@ -653,8 +650,6 @@ MySceneGraph.prototype.parseComponents= function (rootElement) {
 			}
 
 			var childComponents = children[0].children;
-
-			console.log(childComponents);
 
 			if(childComponents.length < 1){
 				return "There needs to be at least one child inside the 'children' block in each component";
