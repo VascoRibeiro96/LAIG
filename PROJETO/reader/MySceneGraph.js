@@ -20,6 +20,7 @@ function MySceneGraph(filename, scene) {
 	this.primitives = [];
 	this.components = [];
 	this.loadedComponents = {};
+	this.parentComponent;
 		
 	// File reading 
 	this.reader = new CGFXMLreader();
@@ -99,6 +100,8 @@ MySceneGraph.prototype.onXMLReady=function()
 
 
 	this.loadedOk=true;
+
+	this.loadComponents();
 	
 	
 	// As the graph loaded ok, signal the scene so that any additional initialization depending on the graph can take place
@@ -745,7 +748,7 @@ MySceneGraph.prototype.parseComponents= function (rootElement) {
 					return "Invalid child name in components.\n Only 'primitiveref' and 'componentref' allowed";
 				}
 				else{
-					curChild = [type, id];
+					curChild = [type, childId];
 				}
 
 				allChildren.push(curChild);
@@ -784,11 +787,11 @@ MySceneGraph.prototype.onXMLError=function (message) {
 MySceneGraph.prototype.loadComponents= function (){
 
 	for(var i = 0; i < this.components.length; ++i){
-		var curComponent = this.component[i];
+		var curComponent = this.components[i];
 
 		var id = curComponent[0];
 
-		var component = new MyComponent(this.scene);
+		var component = new MyComponent(this.scene, id);
 
 		//process transformations
 
@@ -861,15 +864,22 @@ MySceneGraph.prototype.loadComponents= function (){
 			var type = curChild[0];
 			var cId = curChild[1];
 
-			if(type == 'componentref')
-				component.push(this.components[cId]);
+			if(type == 'componentref'){
+				component.children.push(this.loadedComponents[cId]);
+				this.loadedComponents[cId].parent = component;
+			}
 			else
-				component.push(this.primitives[cId]);
+				component.children.push(this.primitives[cId]);
 		}
+
+		this.loadedComponents[id] = component;
 	}
 
+	//Find Parent Component
 
-
+	for(let id in this.loadedComponents)
+		if(this.loadedComponents[id].parent == null)
+			this.parentComponent == this.loadedComponents[id];
 
 }
 

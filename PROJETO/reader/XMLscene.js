@@ -10,6 +10,7 @@ XMLscene.prototype.init = function (application) {
 
     this.primitives = {};
     this.components = {};
+    this.parentComponent = null;
 
     this.initCameras();
     this.initLights();
@@ -55,6 +56,10 @@ XMLscene.prototype.onGraphLoaded = function ()
 	this.gl.clearColor(this.graph.illumination[3][0],this.graph.illumination[3][1],this.graph.illumination[3][2],this.graph.illumination[3][3]);
 	this.setAmbient(this.graph.illumination[2][0],this.graph.illumination[2][1],this.graph.illumination[2][2],this.graph.illumination[2][3]);
 	
+	this.parentComponent = this.graph.parentComponent;
+	this.primitives = this.graph.primitives;
+	this.components = this.graph.loadedComponents;
+
 	this.graphLights();
 	this.loadPrimitives();
 };
@@ -86,7 +91,7 @@ XMLscene.prototype.display = function () {
 	// This is one possible way to do it
 	if (this.graph.loadedOk){
 		this.updateAllLights();
-		//this.parentComponent.display();
+		this.components['torso'].display();
 	}
 };
 
@@ -255,9 +260,10 @@ XMLscene.prototype.loadPrimitives = function(){
 				var slices = primitiveValues[3];
 				var loops = primitiveValues[4];
 				this.primitives[id] = new MyTorus(this, inner, outer, slices, loops);
+				break;
 
 			default:
-				console.log("Invalid primitive");
+				console.log("Invalid primitive: " + type);
 				return;
 		}
 	}

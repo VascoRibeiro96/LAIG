@@ -402,10 +402,10 @@
             <texture id="yellow" />
             
             <children>
-                <componentref id="bodyFront" />
-                <componentref id="bodyBack" />
-                <componentref id="bodyLeft" />
-                <componentref id="bodyRight" />
+                <componentref id="torsoFront" />
+                <componentref id="torsoBack" />
+                <componentref id="torsoLeft" />
+                <componentref id="torsoRight" />
             </children>
             
         </component>

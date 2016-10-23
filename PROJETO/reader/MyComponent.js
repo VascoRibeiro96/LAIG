@@ -1,15 +1,15 @@
-function MyComponent(scene) {
-    /* Temporarily holds the texture id and after updateTextures is called
-     * updates the texture to the texture object.
-     */
+function MyComponent(scene, id) {
+
     this.texture;
 
     this.scene = scene;
+    this.id = id;
     this.materials = [];
     this.inheritMaterial = false;
     this.inheritTexture = false;
     this.children = [];
     this.currentMaterial = 0;
+    this.transformationMatrix = this.scene.getMatrix();
     this.parent = null;
 }
 
@@ -144,7 +144,7 @@ Recursive Display of components
 MyComponent.prototype.display = function(parent) {
     this.scene.pushMatrix();
 
-    this.scene.multMatrix(this.transformation.getMatrix());
+    this.scene.multMatrix(this.transformationMatrix);
 
     if (this.inheritTexture)
         this.texture = parent.texture;
