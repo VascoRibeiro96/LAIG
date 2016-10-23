@@ -52,11 +52,17 @@ MySceneGraph.prototype.onXMLReady=function()
 		return;
 	}	
 	
+	error = this.parseIllumination(rootElement); 
+	if (error != null) {
+		this.onXMLError(error);
+		return;
+	}
+
 	error = this.parseLights(rootElement); 
 	if (error != null) {
 		this.onXMLError(error);
 		return;
-	}	
+	}		
 	
 	error = this.parseTextures(rootElement); 
 	if (error != null) {
@@ -200,13 +206,28 @@ MySceneGraph.prototype.parseIllumination= function (rootElement) {
 	if (elems.length != 1) {
 		return "Either zero or more than one 'illumination' element found.";
 	}
+
+	var illuminationElems = elems[0];
+
+
+	var doublesided = illuminationElems.attributes.getNamedItem('doublesided').value;
+	var local = illuminationElems.attributes.getNamedItem('local').value;
+
+	var ambient = illuminationElems.getElementsByTagName('ambient')[0];
+	var ambientValues = [];
+	ambientValues[0] = ambient.attributes.getNamedItem('r').value;
+	ambientValues[1] = ambient.attributes.getNamedItem('g').value;
+	ambientValues[2] = ambient.attributes.getNamedItem('b').value;
+	ambientValues[3] = ambient.attributes.getNamedItem('a').value;
+
+	var background = illuminationElems.getElementsByTagName('background')[0];
+	var backgroundValues = [];
+	backgroundValues[0] = background.attributes.getNamedItem('r').value;
+	backgroundValues[1] = background.attributes.getNamedItem('g').value;
+	backgroundValues[2] = background.attributes.getNamedItem('b').value;
+	backgroundValues[3] = background.attributes.getNamedItem('a').value;
 	
-	var doublesided = elems.attributes.getNamedItem('doublesided').value;
-	var local = elems.attributes.getNamedItem('local').value;
-	var ambient = elems.attributes.getNamedItem('ambient').value;
-	var background = elems.attributes.getNamedItem('background').value;
-	
-	this.illumination = [doublesided, local, ambient, background];
+	this.illumination = [doublesided, local, ambientValues, backgroundValues];
 }
 
 MySceneGraph.prototype.parseLights= function (rootElement) {

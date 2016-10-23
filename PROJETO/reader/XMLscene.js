@@ -1,4 +1,3 @@
-
 function XMLscene() {
     CGFscene.call(this);
 }
@@ -25,7 +24,7 @@ XMLscene.prototype.init = function (application) {
 
 XMLscene.prototype.initLights = function () {
 
-	this.lights[0].setPosition(2, 3, 3, 1);
+	this.lights[0].setPosition(5, 5, 3, 1);
     this.lights[0].setDiffuse(1.0,1.0,1.0,1.0);
     this.lights[0].update();
 };
@@ -45,7 +44,7 @@ XMLscene.prototype.setDefaultAppearance = function () {
 // As loading is asynchronous, this may be called already after the application has started the run loop
 XMLscene.prototype.onGraphLoaded = function () 
 {
-	//this.gl.clearColor(this.graph.background[0],this.graph.background[1],this.graph.background[2],this.graph.background[3]);
+	this.gl.clearColor(this.graph.illumination[3][0],this.graph.illumination[3][1],this.graph.illumination[3][2],this.graph.illumination[3][3]);
 	this.lights[0].setVisible(true);
     this.lights[0].enable();
 };
