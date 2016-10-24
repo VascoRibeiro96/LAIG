@@ -608,43 +608,33 @@ MySceneGraph.prototype.parsePrimitives = function(primitives) {
         }
 
         if (this.primitives[id])
-            return ('There are two primitives with the same id: ' + id + '.');
+            return ('Two primitives cannot have the same id. Found more than one instance of:' + id);
 
-        if (object)
-            this.primitives[id] = object;
+        this.primitives[id] = object;
     }
 }
 
-/**
- * Parses transformation element of DSX
- * stores transformations in a dictionary for future reference
- * the dictionary keys are the ID strings, the values are arrays
- * the first element of the value array is the function to be called (transtale/rotate/scale)
- * the remainder of the array are the arguments to the function
- */
 MySceneGraph.prototype.parseTransformations = function(transformations) {
     if (transformations.nodeName !== 'transformations')
-        return ('Blocks not ordered correctly. Expected "transformations", found "' + transformations.nodeName + '".');
+        return ('Invalid tag order');
 
     if (transformations.children.length < 1)
-        return 'At least one transformation is needed in transformations block.';
+        return 'There need to be at least one operation inside the transformation tag';
 
-    this.transformations = []; //dictionary
+    this.transformations = []; 
 
-    // this for loop gets the ID of the transformation and, if it is not already in use, stores it in the dictionary
+
     for (var transf of transformations.children) {
         var transfID = this.reader.getString(transf, 'id', true);
-        if (!transfID)
-            return 'Missing transformation ID.';
 
         //check if a transformation with the same ID has already been stored
         if (this.transformations[transfID])
-            return ('Transformation with ID ' + transfID + ' already exists.');
+            return ('Transformation ' + transfID + ' already exists.');
 
         this.transformations[transfID] = new Transformation(this.scene);
 
         for (var operations of transf.children) {
-            this.transformations[transfID].multiply(parseTransformation(this.scene, this.reader, operations));
+            this.transformations[transfID].multiply(this.parseTransformation(this.scene, this.reader, operations));
         }
     }
 };
@@ -655,4 +645,44 @@ MySceneGraph.prototype.parseTransformations = function(transformations) {
 MySceneGraph.prototype.onXMLError = function(message) {
     console.error("XML Loading Error: " + message);
     this.loadedOk = false;
+};
+
+MySceneGraph.prototype.parseTransformation = function(scene, reader, tag) {
+    var transformation = new Transformation(scene);
+
+    switch (tag.nodeName) {
+        case 'translate':
+            transformation.translate(this.reader.getFloat(tag, 'x', true),
+                this.reader.getFloat(tag, 'y', true),
+                this.reader.getFloat(tag, 'z', true)
+            );
+            break;
+
+        case 'rotate':
+            var axis = reader.getString(tag, 'axis', true);            
+            var angle = reader.getFloat(tag, 'angle', true);
+            var x;
+            var y;
+            var z;
+
+            (axis == 'x') ? (x = 1) : (x = 0); 
+            (axis == 'y') ? (y = 1) : (y = 0); 
+            (axis == 'z') ? (z = 1) : (z = 0); 
+
+            transformation.rotate(angle, x, y, z);
+            break;
+
+        case 'scale':
+                transformation.scale(this.reader.getFloat(tag, 'x', true),
+                this.reader.getFloat(tag, 'y', true),
+                this.reader.getFloat(tag, 'z', true)
+            );
+            break;
+
+        default:
+            return "Invalid transformation name: " + tag.nodeName;
+            break;
+    }
+
+    return transformation;
 };
