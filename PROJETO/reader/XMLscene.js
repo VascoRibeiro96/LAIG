@@ -53,7 +53,7 @@ XMLscene.prototype.onGraphLoaded = function() {
     this.interface.setActiveCamera(this.camera);
 
     //GUI for light control
-    for (var i = 0; i < this.lights.length; i++) {
+    for (var i = 0; i < this.lights.length; ++i) {
         this.lightStatus.push(this.lights[i].enabled);
         this.interface.addLightControls(i, this.lightIDs[i]);
     }
@@ -99,7 +99,7 @@ XMLscene.prototype.display = function() {
      * Switches camera to the next one on the scene cameras array
      */
     XMLscene.prototype.nextCamera = function() {
-        if (this.currentCamera === this.cameras.length - 1)
+        if (this.currentCamera == this.cameras.length - 1)
             this.currentCamera = 0;
         else
             ++this.currentCamera;

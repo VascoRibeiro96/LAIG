@@ -68,8 +68,8 @@ MySceneGraph.prototype.parseDsx = function(dsx) {
   Parses the scene tag
 */
 MySceneGraph.prototype.parseScene = function(scene) {
-    if (scene.nodeName !== 'scene')
-        return ('Blocks not ordered correctly. Expected "scene", found "' + scene.nodeName + '".');
+    if (scene.nodeName != 'scene')
+        return ('Invalid tag order');
 
     this.parentComponent = this.reader.getString(scene, 'root', true);
 
@@ -80,8 +80,8 @@ MySceneGraph.prototype.parseScene = function(scene) {
 }
 
 MySceneGraph.prototype.parseViews = function(views) {
-    if (views.nodeName !== 'views')
-        return ('Blocks not ordered correctly. Expected "views", found "' + views.nodeName + '".');
+    if (views.nodeName != 'views')
+        return ('Invalid tag order');
 
     var defaultPerspectiveId = this.reader.getString(views, 'default', true);
 
@@ -115,8 +115,8 @@ MySceneGraph.prototype.parseViews = function(views) {
 }
 
 MySceneGraph.prototype.parseIllumination = function(illumination) {
-    if (illumination.nodeName !== 'illumination')
-        return ('Blocks not ordered correctly. Expected "illumination", found "' + illumination.nodeName + '".');
+    if (illumination.nodeName != 'illumination')
+        return ('Invalid tag order');
 
     this.doublesided = this.reader.getBoolean(illumination, 'doublesided', true);
     this.local = this.reader.getBoolean(illumination, 'local', true);
@@ -146,8 +146,8 @@ MySceneGraph.prototype.parseIllumination = function(illumination) {
 
 
 MySceneGraph.prototype.parseLights = function(lights) {
-    if (lights.nodeName !== 'lights')
-        return ('Blocks not ordered correctly. Expected "lights", found "' + lights.nodeName + '".');
+    if (lights.nodeName != 'lights')
+        return ('Invalid tag order');
 
     var error;
     this.ids = {};
@@ -165,7 +165,7 @@ MySceneGraph.prototype.parseLights = function(lights) {
             return ('A light must have an id. One is missing.');
 
         var enabled = this.reader.getBoolean(light, 'enabled', true);
-        if (enabled === undefined)
+        if (enabled == undefined)
             return ("Light with id " + id + " has no valid 'enabled' attribute");
 
         if (this.ids[id])
@@ -297,8 +297,8 @@ MySceneGraph.prototype.parseSpotLight = function(light, n_lights, enabled, id) {
 }
 
 MySceneGraph.prototype.parseTextures = function(textures) {
-    if (textures.nodeName !== 'textures')
-        return ('Blocks not ordered correctly. Expected "textures", found "' + textures.nodeName + '".');
+    if (textures.nodeName != 'textures')
+        return ('Invalid tag order');
 
     for (var texture of textures.children) {
 
@@ -309,7 +309,7 @@ MySceneGraph.prototype.parseTextures = function(textures) {
         if (this.textures[id])
             return ('Texture with id ' + id + ' already exists.');
 
-        if (id === 'none' || id === 'inherit')
+        if (id == 'none' || id == 'inherit')
             return ('"none" and "inherit" are keywords and cannot be used as texture ids.');
 
 
@@ -339,7 +339,7 @@ MySceneGraph.prototype.parseTextures = function(textures) {
 }
 
 MySceneGraph.prototype.parseMaterials = function(materials) {
-    if (materials.nodeName !== 'materials')
+    if (materials.nodeName != 'materials')
         return ('Invalid Tag Order');
 
     if (!materials.children.length)
@@ -388,8 +388,8 @@ MySceneGraph.prototype.parseMaterials = function(materials) {
 }
 
 MySceneGraph.prototype.parseComponents = function(compsTag) {
-    if (compsTag.nodeName !== 'components')
-        return ('Blocks not ordered correctly. Expected "components", found "' + compsTag.nodeName + '".');
+    if (compsTag.nodeName != 'components')
+        return ('Invalid tag order');
 
     var components = {};
 
@@ -412,7 +412,7 @@ MySceneGraph.prototype.parseComponents = function(compsTag) {
         for (var transfTag of transformationTag.children) {
         var transformation;
 
-        if (transfTag.nodeName === 'transformationref') {
+        if (transfTag.nodeName == 'transformationref') {
     
             var id = this.reader.getString(transfTag, 'id', true);
 
@@ -440,7 +440,7 @@ MySceneGraph.prototype.parseComponents = function(compsTag) {
         if (!id)
             return 'A material in a component is missing its id.';
 
-        if (id === 'inherit')
+        if (id == 'inherit')
             component.inheritMaterial = true;
         else if (!this.materials[id])
             return ('There is no material with id ' + id + '.');
@@ -456,7 +456,7 @@ MySceneGraph.prototype.parseComponents = function(compsTag) {
 
         var textureId = this.reader.getString(texture, 'id', true);
         if (textureId) {
-            if (textureId !== 'none' && textureId !== 'inherit' && !this.textures[textureId])
+            if (textureId != 'none' && textureId != 'inherit' && !this.textures[textureId])
                 return ('No texture with id ' + textureId + ' exists.');
 
             error = component.setTexture(textureId);
@@ -466,7 +466,6 @@ MySceneGraph.prototype.parseComponents = function(compsTag) {
         } else
             return ('A component with id ' + id + ' is missing a texture id');
 
-        //Children parsing
         var childrenTag = compTag.getElementsByTagName('children')[0];
 
         error = this.parseComponentChildren(components, component, childrenTag)
@@ -490,16 +489,13 @@ MySceneGraph.prototype.createSceneGraph = function(components) {
         }
     }
 
-    if (!components[this.parentComponent])
-        return 'There is no node with the root id provided.';
-
     this.scene.parentComponent = components[this.parentComponent].component;
 
     /*
      * Handle textures inheritance
      */
-    if (this.scene.parentComponent.texture === 'inherit')
-        return 'Root node cannot inherit a texture.';
+    if (this.scene.parentComponent.texture == 'inherit')
+        return 'Root component cannot inherit a texture because it has no parent.';
 
     this.scene.parentComponent.updateTextures(this.textures);
 
@@ -512,12 +508,12 @@ MySceneGraph.prototype.parseComponentChildren = function(components, component, 
     var children = [];
 
     for (var child of tag.children) {
-        if (child.nodeName !== 'componentref' && child.nodeName !== 'primitiveref')
+        if (child.nodeName != 'componentref' && child.nodeName != 'primitiveref')
             return ('Only componentref or primitiveref tags allowed');
 
         var id = this.reader.getString(child, 'id', true);
 
-        if (child.nodeName === 'componentref') {
+        if (child.nodeName == 'componentref') {
 
         children.push(id);
         } 
@@ -533,7 +529,7 @@ MySceneGraph.prototype.parseComponentChildren = function(components, component, 
 
 
 MySceneGraph.prototype.parsePrimitives = function(primitives) {
-    if (primitives.nodeName !== 'primitives')
+    if (primitives.nodeName != 'primitives')
         return ('Tag not ordered correctly');
 
     for (var primitive of primitives.children) {
@@ -609,7 +605,7 @@ MySceneGraph.prototype.parsePrimitives = function(primitives) {
 }
 
 MySceneGraph.prototype.parseTransformations = function(transformations) {
-    if (transformations.nodeName !== 'transformations')
+    if (transformations.nodeName != 'transformations')
         return ('Invalid tag order');
 
     if (transformations.children.length < 1)
