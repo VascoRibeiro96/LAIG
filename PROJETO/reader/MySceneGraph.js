@@ -491,17 +491,11 @@ MySceneGraph.prototype.createSceneGraph = function(components) {
 
     this.scene.parentComponent = components[this.parentComponent].component;
 
-    /*
-     * Handle textures inheritance
-     */
     if (this.scene.parentComponent.texture == 'inherit')
         return 'Root component cannot inherit a texture because it has no parent.';
 
     this.scene.parentComponent.updateTextures(this.textures);
 
-    /*
-     * Handle materials inheritance
-     */
 };
 
 MySceneGraph.prototype.parseComponentChildren = function(components, component, tag) {
