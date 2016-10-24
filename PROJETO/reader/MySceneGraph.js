@@ -859,8 +859,12 @@ MySceneGraph.prototype.loadComponents= function (){
 			component.setTexture(this.textures[textId]);
 		}
 
-		//process children
+		this.loadedComponents[id] = component;
+	}
 
+	//process children
+	for(var i = 0; i < this.components.length; ++i){
+		var curComponent = this.components[i];
 		var children = curComponent[4];
 
 		for(var j = 0; j < children.length; ++j){
@@ -879,8 +883,6 @@ MySceneGraph.prototype.loadComponents= function (){
 				component.children.push(this.primitives[cId]);
 			}
 		}
-
-		this.loadedComponents[id] = component;
 	}
 
 

@@ -5,6 +5,8 @@
 function MySphere(scene, radius, slices, stacks) {
  	CGFobject.call(this,scene);
 
+    this.scene = scene;
+
 	this.radius = radius;
 	this.slices = slices;
 	this.stacks = stacks;

@@ -59,6 +59,8 @@ XMLscene.prototype.onGraphLoaded = function ()
 	this.gl.clearColor(this.graph.illumination[3][0],this.graph.illumination[3][1],this.graph.illumination[3][2],this.graph.illumination[3][3]);
 	this.setAmbient(this.graph.illumination[2][0],this.graph.illumination[2][1],this.graph.illumination[2][2],this.graph.illumination[2][3]);
 	
+	this.axis = new CGFaxis(this, this.graph.sceneValues[1]);
+
 	this.parentComponent = this.graph.parentComponent;
 	this.primitives = this.graph.primitives;
 	this.components = this.graph.loadedComponents;
@@ -68,8 +70,13 @@ XMLscene.prototype.onGraphLoaded = function ()
 };
 
 XMLscene.prototype.display = function () {
+
+    this.gl.viewport(0, 0, this.gl.canvas.width, this.gl.canvas.height);
+
 	// ---- BEGIN Background, camera and axis setup
-	
+
+	if (this.graph.loadedOk){
+
 	// Clear image and depth buffer everytime we update the scene
     this.gl.viewport(0, 0, this.gl.canvas.width, this.gl.canvas.height);
     this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
@@ -87,12 +94,6 @@ XMLscene.prototype.display = function () {
 
 	this.setDefaultAppearance();
 	
-	// ---- END Background, camera and axis setup
-
-	// it is important that things depending on the proper loading of the graph
-	// only get executed after the graph has loaded correctly.
-	// This is one possible way to do it
-	if (this.graph.loadedOk){
 		this.updateAllLights();
 
 		this.parentComponent.display();
