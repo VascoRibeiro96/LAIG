@@ -64,9 +64,6 @@ MySceneGraph.prototype.parseDsx = function(dsx) {
     return (this.parseScene(scene) || this.parseViews(views) || this.parseIllumination(illumination) || this.parseLights(lights) || this.parseTextures(textures) || this.parseMaterials(materials) || this.parseTransformations(transformations) || this.parsePrimitives(primitives) || this.parseComponents(components));
 }
 
-/**
-  Parses the scene tag
-*/
 MySceneGraph.prototype.parseScene = function(scene) {
     if (scene.nodeName != 'scene')
         return ('Invalid tag order');
@@ -156,9 +153,7 @@ MySceneGraph.prototype.parseLights = function(lights) {
         return "No lights detected in the dsx";
     }
 
-    /*
-     * For every light, checks it attributes and if it is an omni or spot light, calling the appropriate parser
-     */
+
     for (var light of lights.children) {
         var id = this.reader.getString(light, 'id', true);
         if (!id)
@@ -191,9 +186,7 @@ MySceneGraph.prototype.parseLights = function(lights) {
     return error;
 };
 
-/**
- * Parses an omni type light from the lights block
- */
+
 MySceneGraph.prototype.parseOmniLight = function(light, n_lights, enabled, id) {
 
     var newLight = new CGFlight(this.scene, n_lights);
@@ -303,21 +296,11 @@ MySceneGraph.prototype.parseTextures = function(textures) {
     for (var texture of textures.children) {
 
         var id = this.reader.getString(texture, 'id', true);
-        if (!id)
-            return ('A texture must have an id. One is missing.');
 
         if (this.textures[id])
-            return ('Texture with id ' + id + ' already exists.');
-
-        if (id == 'none' || id == 'inherit')
-            return ('"none" and "inherit" are keywords and cannot be used as texture ids.');
-
+            return ('Texture ' + id + ' already exists.');
 
         var file = this.reader.getString(texture, 'file', true);
-
-        if (!file)
-            return ('Texture with id ' + id + ' does not have a file associated.');
-
 
         var length_s = this.reader.getFloat(texture, 'length_s', false);
 
@@ -397,10 +380,10 @@ MySceneGraph.prototype.parseComponents = function(compsTag) {
         var id = this.reader.getString(compTag, 'id', true);
 
         if (!id)
-            return 'A component must have an id. Please provide one.';
+            return 'There needs to be an ID for every component';
 
         if (components[id])
-            return ('A component with id ' + id + ' already exists.');
+            return ('Component' + id + ' already exists.');
 
         var component = new Component(this.scene, id);
 
@@ -417,7 +400,7 @@ MySceneGraph.prototype.parseComponents = function(compsTag) {
             var id = this.reader.getString(transfTag, 'id', true);
 
             if (!this.transformations[id])
-                return ('Transformation with id ' + id + ' does not exist.');
+                return ('Transformation ' + id + ' does not exist.');
 
             transformation = this.transformations[id];
             component.transform(transformation);
@@ -437,9 +420,6 @@ MySceneGraph.prototype.parseComponents = function(compsTag) {
         
         var id = this.reader.getString(materialTag, 'id', true);
 
-        if (!id)
-            return 'A material in a component is missing its id.';
-
         if (id == 'inherit')
             component.inheritMaterial = true;
         else if (!this.materials[id])
@@ -452,7 +432,7 @@ MySceneGraph.prototype.parseComponents = function(compsTag) {
 
         var texture = compTag.getElementsByTagName('texture')[0];
         if (!texture)
-            return ('A component with id ' + id + ' does not have a texture tag.');
+            return ('Component ' + id + ' does not have a texture tag.');
 
         var textureId = this.reader.getString(texture, 'id', true);
         if (textureId) {
@@ -464,7 +444,7 @@ MySceneGraph.prototype.parseComponents = function(compsTag) {
             if (error)
                 return error;
         } else
-            return ('A component with id ' + id + ' is missing a texture id');
+            return ('Component' + id + ' need a texture tag');
 
         var childrenTag = compTag.getElementsByTagName('children')[0];
 
@@ -524,7 +504,7 @@ MySceneGraph.prototype.parseComponentChildren = function(components, component, 
 
 MySceneGraph.prototype.parsePrimitives = function(primitives) {
     if (primitives.nodeName != 'primitives')
-        return ('Tag not ordered correctly');
+        return ('Invalid Tag order');
 
     for (var primitive of primitives.children) {
         var shape = primitive.children[0];
