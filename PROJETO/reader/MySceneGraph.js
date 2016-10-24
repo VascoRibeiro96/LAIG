@@ -542,7 +542,7 @@ MySceneGraph.prototype.parsePrimitives= function (rootElement) {
 		
 		var curPrimitive = primitivesElems[i];
 
-		var id = curPrimitive.attributes.getNamedItem('id');
+		var id = curPrimitive.attributes.getNamedItem('id').value;
 		ids[i] = id;
 
 		var primitiveChild = curPrimitive.children;
@@ -553,6 +553,7 @@ MySceneGraph.prototype.parsePrimitives= function (rootElement) {
 		}
 
 		var type = primitiveChild[0].tagName;
+		var primitiveObject;
 
 		switch(type){
 			case 'rectangle':
@@ -560,7 +561,7 @@ MySceneGraph.prototype.parsePrimitives= function (rootElement) {
 				var y1 = primitiveChild[0].attributes.getNamedItem('y1').value;
 				var x2 = primitiveChild[0].attributes.getNamedItem('x2').value;
 				var y2 = primitiveChild[0].attributes.getNamedItem('y2').value;
-				primitiveValues = [type, x1, y1, x2, y2];
+				primitiveObject = new MyRetangle(this.scene, x1, y1, x2, y2);
 				break;
 
 			case 'triangle':
@@ -573,7 +574,7 @@ MySceneGraph.prototype.parsePrimitives= function (rootElement) {
 				var x3 = primitiveChild[0].attributes.getNamedItem('x3').value;
 				var y3 = primitiveChild[0].attributes.getNamedItem('y3').value;
 				var z3 = primitiveChild[0].attributes.getNamedItem('z3').value; 
-				primitiveValues = [type, x1, y1, z1, x2, y2, z2, x3, y3, z3];
+				primitiveObject = new MyTriangle(this.scene, x1, y1, z1, x2, y2, z2, x3, y3, z3);
 				break;
 
 			case 'cylinder':
@@ -582,14 +583,14 @@ MySceneGraph.prototype.parsePrimitives= function (rootElement) {
 				var height = primitiveChild[0].attributes.getNamedItem('height').value;
 				var slices = primitiveChild[0].attributes.getNamedItem('slices').value;
 				var stacks = primitiveChild[0].attributes.getNamedItem('stacks').value;
-				primitiveValues = [type, base, top, height, slices, stacks];
+				primitiveObject = new MyCylinder(this.scene, base, top, height, slices, stacks);
 				break;
 
 			case 'sphere':
 				var radius = primitiveChild[0].attributes.getNamedItem('radius').value;
 				var slices = primitiveChild[0].attributes.getNamedItem('slices').value;
 				var stacks = primitiveChild[0].attributes.getNamedItem('stacks').value;
-				primitiveValues = [type, radius, slices, stacks];
+				primitiveObject = new MySphere(this.scene, radius, slices, stacks);
 				break;
 
 			case 'torus':
@@ -597,17 +598,15 @@ MySceneGraph.prototype.parsePrimitives= function (rootElement) {
 				var outer = primitiveChild[0].attributes.getNamedItem('outer').value;
 				var slices = primitiveChild[0].attributes.getNamedItem('slices').value;
 				var loops = primitiveChild[0].attributes.getNamedItem('loops').value;
-				primitiveValues = [type, inner, outer, slices, loops];
+				primitiveObject = new MyTorus(this.scene, inner, outer, slices, loops);
 				break;
 
 			default:
 				return "Invalid primitive name" + type;
 				break;
 		}
-		console.log(id);
-		this.primitives[id] = primitiveValues;
-		console.log(this.primitives);
 
+        this.primitives[id] = primitiveObject;
 	}
 
 	if(this.compareIds(ids) == "Equal Ids"){
