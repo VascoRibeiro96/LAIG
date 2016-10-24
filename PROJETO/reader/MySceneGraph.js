@@ -413,18 +413,49 @@ MySceneGraph.prototype.parseComponents = function(compsTag) {
         var transformationTag = compTag.getElementsByTagName('transformation')[0];
         var materialsTag = compTag.getElementsByTagName('materials')[0];
 
-        //Error checking
-        var error = this.parseComponentTransformations(component, transformationTag);
-        if (error)
-            return error;
+        //Transformations
 
-        error = this.parseComponentMaterials(component, materialsTag)
-        if (error)
-            return error;
+        for (var transfTag of transformationTag.children) {
+        var transformation;
 
-        /*
-         * Texture parsing
-         */
+        if (transfTag.nodeName === 'transformationref') {
+    
+            var id = this.reader.getString(transfTag, 'id', true);
+
+            if (!this.transformations[id])
+                return ('Transformation with id ' + id + ' does not exist.');
+
+            transformation = this.transformations[id];
+            component.transform(transformation);
+        } 
+        else {
+            transformation = parseTransformation(this.scene, this.reader, transfTag);
+            component.transform(transformation);
+        }
+    }
+
+        //Materials
+
+        if (!materialsTag.children.length)
+        return 'Components must have a material';
+
+        for (var materialTag of materialsTag.children) {
+        
+        var id = this.reader.getString(materialTag, 'id', true);
+
+        if (!id)
+            return 'A material in a component is missing its id.';
+
+        if (id === 'inherit')
+            component.inheritMaterial = true;
+        else if (!this.materials[id])
+            return ('There is no material with id ' + id + '.');
+
+        component.addMaterial(this.materials[id]);
+    }
+        
+        //Textures
+
         var texture = compTag.getElementsByTagName('texture')[0];
         if (!texture)
             return ('A component with id ' + id + ' does not have a texture tag.');
@@ -483,102 +514,20 @@ MySceneGraph.prototype.createSceneGraph = function(components) {
      */
 };
 
-/**
- * Parses the transformations and adds it to the component.
- */
-MySceneGraph.prototype.parseComponentTransformations = function(component, tag) {
-    //Used to prevent the dsx from having transformation ref and other
-    //transformations in the same block.
-    var transfRef;
-
-    for (var transfTag of tag.children) {
-        var transformation;
-
-        if (transfTag.nodeName === 'transformationref') {
-            /*
-             * If transfRef is undefined, transformationref can be parsed.
-             * If transfRef is true, a transformationref has already been parsed,
-             * and cannot be parsed again.
-             * If transfRef is undefined, nothing has been parsed and the parsing
-             * can be executed.
-             */
-            if (transfRef === false)
-                return ('Component with id ' + component.id + ' has transformationref and other transformations mixed.');
-            else if (transfRef === true)
-                return;
-
-            var id = this.reader.getString(transfTag, 'id', true);
-
-            if (!this.transformations[id])
-                return ('Transformation with id ' + id + ' does not exist.');
-
-            transformation = this.transformations[id];
-            component.transform(transformation);
-            transfRef = true;
-        } else {
-            /*
-             * If transfRef is true, a transformationref has been parsed and
-             * other types of transformation cannot be parsed.
-             * If transfRef is false or undefined, transformations can be parsed.
-             */
-            if (transfRef === true)
-                return ('Component with id ' + component.id + ' has transformationref and other transformations mixed.');
-
-            transformation = parseTransformation(this.scene, this.reader, transfTag);
-            component.transform(transformation);
-            transfRef = false;
-        }
-    }
-}
-
-/**
- * Parses the component materials and adds it to the component.
- */
-MySceneGraph.prototype.parseComponentMaterials = function(component, tag) {
-    if (!tag.children.length)
-        return 'There is a component that does not have a material.';
-
-    for (var materialTag of tag.children) {
-        var id = this.reader.getString(materialTag, 'id', true);
-
-        if (!id)
-            return 'A material in a component is missing its id.';
-
-        if (id === 'inherit')
-            component.inheritMaterial = true;
-        else if (!this.materials[id])
-            return ('There is no material with id ' + id + '.');
-
-        component.addMaterial(this.materials[id]);
-    }
-}
-
-/**
- * Parses the children of the given component and:
- * If it is a primitive, adds it to the Component class;
- * If it is another component, adds it to the children array;
- *
- * In the end, it adds the component and its children to the components dictionary.
- */
 MySceneGraph.prototype.parseComponentChildren = function(components, component, tag) {
     var children = [];
 
     for (var child of tag.children) {
         if (child.nodeName !== 'componentref' && child.nodeName !== 'primitiveref')
-            return ('There is a component with id ' + component.getId() + ' with an unexpected child tag.');
+            return ('Only componentref or primitiveref tags allowed');
 
         var id = this.reader.getString(child, 'id', true);
 
-        if (!id)
-            return ('There is a component with id ' + component.getId() + ' that has a child without id.');
-
         if (child.nodeName === 'componentref') {
 
-            if (id === component.getId()) //Check for cylic dependency
-                return ('Cyclic dependency on component named ' + component.getId() + '.');
-
-            children.push(id);
-        } else //primitiveref
+        children.push(id);
+        } 
+        else 
             component.addChild(this.primitives[id]);
     }
 
