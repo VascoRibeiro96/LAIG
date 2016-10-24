@@ -423,7 +423,7 @@ MySceneGraph.prototype.parseComponents = function(compsTag) {
             component.transform(transformation);
         } 
         else {
-            transformation = parseTransformation(this.scene, this.reader, transfTag);
+            transformation = this.parseTransformation(this.scene, this.reader, transfTag);
             component.transform(transformation);
         }
     }
