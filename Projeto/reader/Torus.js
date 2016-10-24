@@ -23,42 +23,39 @@ Torus.prototype.initBuffers = function() {
     this.normals = [];
     this.indices = [];
     this.texCoords = [];
-    var c = (this.outer + this.inner) / 2;
+	
 
-    var ang1 = 2 * Math.PI / this.slices;
-    var ang2 = 2 * Math.PI / this.loops;
-    var nverts = 0;
-    var patchLengthY = 1 / this.slices;
-    var patchLengthX = 1 / this.loops;
-    var k = 0;
+    var angslices = 2 * Math.PI / this.slices;
+    var angloops = 2 * Math.PI / this.loops;
+    var idvertices = 0;
 
-    for (var m = 0; m <= this.slices; m++) {
-        for (var n = 0; n <= this.loops; n++) {
+    for (var i = 0; i <= this.slices; i++) {
+        for (var j = 0; j <= this.loops; j++) {
 
-            var x = (this.outer + this.inner * Math.cos(n * ang2)) * Math.cos(m * ang1);
-            var y = (this.outer + this.inner * Math.cos(n * ang2)) * Math.sin(m * ang1);
-            var z = this.inner * Math.sin(n * ang1)
+            this.vertices.push(
+					(this.outer + this.inner * Math.cos(j * angloops)) * Math.cos(i * angslices),
+					(this.outer + this.inner * Math.cos(j * angloops)) * Math.sin(i * angslices),
+					this.inner * Math.sin(j * angslices));
+					
+					
+            this.normals.push(
+					(this.inner * Math.cos(j * angloops)) * Math.cos(i * angslices),
+					(this.inner * Math.cos(j * angloops)) * Math.sin(i * angslices),
+					this.inner * Math.sin(j * angslices));
 
-            var nx = (this.inner * Math.cos(n * ang2)) * Math.cos(m * ang1);
-            var ny = (this.inner * Math.cos(n * ang2)) * Math.sin(m * ang1);
-            var nz = this.inner * Math.sin(n * ang1)
+            var xCoord = Math.acos((this.outer + this.inner * Math.cos(j * angloops)) * Math.cos(i * angslices) / this.inner) / (2 * Math.PI);
+            var yCoord = 2 * Math.PI * Math.acos((this.inner * Math.sin(j * angslices)) / (this.inner + this.outer * Math.cos(2 * Math.PI * xCoord)));
 
-            this.vertices.push(x, y, z);
-            this.normals.push(nx, ny, nz);
-
-            var xCoord = Math.acos(x / this.inner) / (2 * Math.PI);
-            var yCoord = 2 * Math.PI * Math.acos(z / (this.inner + this.outer * Math.cos(2 * Math.PI * xCoord)));
-
-            yCoord = m / this.slices;
-            xCoord = (n % (this.loops + 1)) / this.slices;
+            yCoord = i / this.slices;
+            xCoord = (j % (this.loops + 1)) / this.slices;
 
             this.texCoords.push(xCoord, yCoord);
 
-            nverts++;
+            idvertices++;
 
-            if (m > 0 && n > 0) {
-                this.indices.push(nverts - this.loops - 2, nverts - 2, nverts - 1);
-                this.indices.push(nverts - 2, nverts - this.loops - 2, nverts - this.loops - 3);
+            if (i > 0 && j > 0) {
+                this.indices.push(idvertices - this.loops - 2, idvertices - 2, idvertices - 1);
+                this.indices.push(idvertices - 2, idvertices - this.loops - 2, idvertices - this.loops - 3);
             }
         }
     }
