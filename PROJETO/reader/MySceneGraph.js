@@ -604,7 +604,9 @@ MySceneGraph.prototype.parsePrimitives= function (rootElement) {
 				return "Invalid primitive name" + type;
 				break;
 		}
+		console.log(id);
 		this.primitives[id] = primitiveValues;
+		console.log(this.primitives);
 
 	}
 
@@ -875,7 +877,6 @@ MySceneGraph.prototype.loadComponents= function (){
 			}
 			else
 			{
-				console.log(this.primitives);
 				component.children.push(this.primitives[cId]);
 			}
 		}
