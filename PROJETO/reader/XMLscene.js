@@ -25,7 +25,7 @@ XMLscene.prototype.init = function(application) {
     this.lightIDs = [];
     this.lightStatus = [];
     this.cameras = [];
-    this.rootNode;
+    this.parentComponent;
 };
 
 /**
@@ -84,7 +84,7 @@ XMLscene.prototype.display = function() {
         for (light of this.lights)
             light.update();
 
-        this.rootNode.display();
+        this.parentComponent.display();
 
         // Draw axis
         this.axis.display();
@@ -92,7 +92,7 @@ XMLscene.prototype.display = function() {
     };
 
     XMLscene.prototype.switchMaterials = function() {
-        this.rootNode.switchMaterials();
+        this.parentComponent.switchMaterials();
     };
 
     /**
@@ -102,13 +102,13 @@ XMLscene.prototype.display = function() {
         if (this.currentCamera === this.cameras.length - 1)
             this.currentCamera = 0;
         else
-            this.currentCamera++;
+            ++this.currentCamera;
 
         this.camera = this.cameras[this.currentCamera];
         this.interface.setActiveCamera(this.camera);
     };
 
-    for (let i = 0; i < this.lights.length; i++) {
+    for (var i = 0; i < this.lights.length; ++i) {
         if (this.lightStatus[i])
             this.lights[i].enable();
 

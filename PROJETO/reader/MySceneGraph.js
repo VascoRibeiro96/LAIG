@@ -468,15 +468,15 @@ MySceneGraph.prototype.createSceneGraph = function(components) {
     if (!components[this.parentComponent])
         return 'There is no node with the root id provided.';
 
-    this.scene.rootNode = components[this.parentComponent].component;
+    this.scene.parentComponent = components[this.parentComponent].component;
 
     /*
      * Handle textures inheritance
      */
-    if (this.scene.rootNode.texture === 'inherit')
+    if (this.scene.parentComponent.texture === 'inherit')
         return 'Root node cannot inherit a texture.';
 
-    this.scene.rootNode.updateTextures(this.textures);
+    this.scene.parentComponent.updateTextures(this.textures);
 
     /*
      * Handle materials inheritance
