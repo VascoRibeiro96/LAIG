@@ -2,7 +2,7 @@
  * MyTriangle
  * @constructor
  */
- function MyTriangle(scene, x1, y1, z1, x2, y2, z2, x3, y3, z3) {
+ function Triangle(scene, x1, y1, z1, x2, y2, z2, x3, y3, z3) {
  	CGFobject.call(this,scene);
 
 	x1 = typeof x1 !== 'undefined' ? x1 : 0.0;
@@ -28,10 +28,10 @@
  	this.initBuffers();
  };
 
- MyTriangle.prototype = Object.create(CGFobject.prototype);
- MyTriangle.prototype.constructor = MyTriangle;
+ Triangle.prototype = Object.create(CGFobject.prototype);
+ Triangle.prototype.constructor = Triangle;
 
- MyTriangle.prototype.initBuffers = function() {
+ Triangle.prototype.initBuffers = function() {
 
  	this.vertices = [
  	this.x1, this.y1, this.z1,

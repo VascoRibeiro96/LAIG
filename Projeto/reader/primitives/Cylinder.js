@@ -2,7 +2,7 @@
  * MyCylinder
  * @constructor
  */
- function MyCylinder(scene, base, top, height, slices, stacks) {
+ function Cylinder(scene, base, top, height, slices, stacks) {
  	CGFobject.call(this,scene);
 
 	//if slices not define, set to 6
@@ -18,16 +18,16 @@
 	this.slices = slices;
 	this.stacks = stacks;
 
-	this.baseCircle = new MyCircle(this.scene, this.slices, this.base);
-	this.topCircle = new MyCircle(this.scene, this.slices, this.top);
+	this.baseCircle = new Circle(this.scene, this.slices, this.base);
+	this.topCircle = new Circle(this.scene, this.slices, this.top);
 	
  	this.initBuffers();
  };
 
- MyCylinder.prototype = Object.create(CGFobject.prototype);
- MyCylinder.prototype.constructor = MyCylinder;
+ Cylinder.prototype = Object.create(CGFobject.prototype);
+ Cylinder.prototype.constructor = Cylinder;
 
- MyCylinder.prototype.initBuffers = function() {
+ Cylinder.prototype.initBuffers = function() {
  	
 
 	var n = 2*Math.PI / this.slices;
@@ -87,7 +87,7 @@
  	this.initGLBuffers();
  };
  
- MyCylinder.prototype.display = function() {
+ Cylinder.prototype.display = function() {
 
     CGFobject.prototype.display.call(this);
     this.baseCircle.display();

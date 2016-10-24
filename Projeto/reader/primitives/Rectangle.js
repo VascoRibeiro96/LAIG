@@ -2,7 +2,7 @@
  * MyRetangle
  * @constructor
  */
- function MyRetangle(scene, x1, y1, x2, y2) {
+ function Rectangle(scene, x1, y1, x2, y2) {
  	CGFobject.call(this,scene);
 
 	x1 = typeof x1 !== 'undefined' ? x1 : 0.0;
@@ -17,10 +17,10 @@
  	this.initBuffers();
  };
 
-MyRetangle.prototype = Object.create(CGFobject.prototype);
-MyRetangle.prototype.constructor = MyRetangle;
+Rectangle.prototype = Object.create(CGFobject.prototype);
+Rectangle.prototype.constructor = Rectangle;
 
-MyRetangle.prototype.initBuffers = function() {
+Rectangle.prototype.initBuffers = function() {
 
  	this.vertices = [
  	this.x1, this.y1, 0,
