@@ -79,9 +79,6 @@ MySceneGraph.prototype.parseScene = function(scene) {
     this.scene.axisLength = this.reader.getFloat(scene, 'axis_length', false);
 }
 
-/**
-  Parses the views tag and its children and sets the scene's cameras accordingly.
-*/
 MySceneGraph.prototype.parseViews = function(views) {
     if (views.nodeName !== 'views')
         return ('Blocks not ordered correctly. Expected "views", found "' + views.nodeName + '".');
@@ -92,21 +89,22 @@ MySceneGraph.prototype.parseViews = function(views) {
         return 'You need to have at least one perspective defined.';
 
     for (var perspective of views.children) {
-        //Parse perspective attributes
         var id = this.reader.getString(perspective, 'id', true);
         var fov = this.reader.getFloat(perspective, 'angle', true) * Math.PI / 180; //To radians
         var near = this.reader.getFloat(perspective, 'near', true);
         var far = this.reader.getFloat(perspective, 'far', true);
 
-        //Parse perspective elements
         var fromTag = perspective.getElementsByTagName('from')[0];
-        var fromVector = parseVec3(this.reader, fromTag);
+        var fromVector = [this.reader.getFloat(fromTag, 'x', true),
+                          this.reader.getFloat(fromTag, 'y', true), 
+                          this.reader.getFloat(fromTag, 'z', true)];
 
         var toTag = perspective.getElementsByTagName('to')[0];
-        var toVector = parseVec3(this.reader, toTag);
+        var toVector = [this.reader.getFloat(toTag, 'x', true),
+                        this.reader.getFloat(toTag, 'y', true), 
+                        this.reader.getFloat(toTag, 'z', true)];
 
-        //Sets the default camera
-        if (defaultPerspectiveId === id)
+        if (defaultPerspectiveId == id)
             this.scene.currentCamera = this.scene.cameras.length;
 
         this.scene.cameras.push(new CGFcamera(fov, near, far, fromVector, toVector));
@@ -116,10 +114,6 @@ MySceneGraph.prototype.parseViews = function(views) {
         return 'The default perspective is not a child of views.';
 }
 
-
-/**
- * Parses the illumination block of the DSX
- */
 MySceneGraph.prototype.parseIllumination = function(illumination) {
     if (illumination.nodeName !== 'illumination')
         return ('Blocks not ordered correctly. Expected "illumination", found "' + illumination.nodeName + '".');
@@ -131,10 +125,16 @@ MySceneGraph.prototype.parseIllumination = function(illumination) {
         return 'Boolean value(s) in illumination missing.';
 
     var ambientTag = illumination.getElementsByTagName('ambient')[0];
-    this.ambient = parseRGBA(this.reader, ambientTag);
+    this.ambient = [this.reader.getFloat(ambientTag, 'r', true),
+                    this.reader.getFloat(ambientTag, 'g', true),
+                    this.reader.getFloat(ambientTag, 'b', true),
+                    this.reader.getFloat(ambientTag, 'a', true)];
 
     var backgroundTag = illumination.getElementsByTagName('background')[0];
-    this.bg = parseRGBA(this.reader, backgroundTag);
+    this.bg = [this.reader.getFloat(backgroundTag, 'r', true),
+               this.reader.getFloat(backgroundTag, 'g', true),
+               this.reader.getFloat(backgroundTag, 'b', true),
+               this.reader.getFloat(backgroundTag, 'a', true)];
 
 
     if (this.ambient == null)
@@ -144,9 +144,7 @@ MySceneGraph.prototype.parseIllumination = function(illumination) {
         return 'Background illumination missing.';
 }
 
-/**
- * Parses the lights block from the dsx.
- */
+
 MySceneGraph.prototype.parseLights = function(lights) {
     if (lights.nodeName !== 'lights')
         return ('Blocks not ordered correctly. Expected "lights", found "' + lights.nodeName + '".');
@@ -198,79 +196,81 @@ MySceneGraph.prototype.parseLights = function(lights) {
  */
 MySceneGraph.prototype.parseOmniLight = function(light, n_lights, enabled, id) {
 
-    var locationTag = light.getElementsByTagName('location')[0];
-    var location = parseVec4(this.reader, locationTag);
-    if (!location)
-        return ("Light with id " + id + " is missing a valid location!");
-
-    var ambientTag = light.getElementsByTagName('ambient')[0];
-    var ambient = parseRGBA(this.reader, ambientTag);
-    if (!ambient)
-        return ("Light with id " + id + " is missing a valid ambient setting!");
-
-    var diffuseTag = light.getElementsByTagName('diffuse')[0];
-    var diffuse = parseRGBA(this.reader, diffuseTag);
-    if (!diffuse)
-        return ("Light with id " + id + " is missing a valid diffuse setting!");
-
-    var specularTag = light.getElementsByTagName('specular')[0];
-    var specular = parseRGBA(this.reader, specularTag);
-    if (!specular)
-        return ("Light with id " + id + " is missing a valid specular setting!");
-
     var newLight = new CGFlight(this.scene, n_lights);
     if (enabled)
         newLight.enable();
     else
         newLight.disable();
 
-    newLight.setPosition(location[0], location[1], location[2], location[3]);
-    newLight.setAmbient(ambient[0], ambient[1], ambient[2], ambient[3]);
-    newLight.setDiffuse(diffuse[0], diffuse[1], diffuse[2], diffuse[3]);
-    newLight.setSpecular(specular[0], specular[1], specular[2], specular[3]);
-    newLight.setVisible(true);
+    var locationTag = light.getElementsByTagName('location')[0];
+    newLight.setPosition(this.reader.getFloat(locationTag, 'x', true),
+                         this.reader.getFloat(locationTag, 'y', true), 
+                         this.reader.getFloat(locationTag, 'z', true), 
+                         this.reader.getFloat(locationTag, 'w', true));
 
+    var ambientTag = light.getElementsByTagName('ambient')[0];
+    newLight.setAmbient(this.reader.getFloat(ambientTag, 'r', true),
+                        this.reader.getFloat(ambientTag, 'g', true), 
+                        this.reader.getFloat(ambientTag, 'b', true), 
+                        this.reader.getFloat(ambientTag, 'a', true));
+
+    var diffuseTag = light.getElementsByTagName('diffuse')[0];
+    newLight.setDiffuse(this.reader.getFloat(diffuseTag, 'r', true),
+                        this.reader.getFloat(diffuseTag, 'g', true), 
+                        this.reader.getFloat(diffuseTag, 'b', true), 
+                        this.reader.getFloat(diffuseTag, 'a', true));
+
+
+    var specularTag = light.getElementsByTagName('specular')[0];
+    newLight.setSpecular(this.reader.getFloat(specularTag, 'r', true),
+                         this.reader.getFloat(specularTag, 'g', true), 
+                         this.reader.getFloat(specularTag, 'b', true), 
+                         this.reader.getFloat(specularTag, 'a', true));
+    
+    newLight.setVisible(true);
     this.scene.lights.push(newLight);
-    //needed for GUI
     this.scene.lightIDs.push(id);
     newLight.update();
 }
 
 MySceneGraph.prototype.parseSpotLight = function(light, n_lights, enabled, id) {
+    var newLight = new CGFlight(this.scene, n_lights);
+
     var angle = this.reader.getFloat(light, 'angle', true);
-    if (!angle)
-        return ("Light with id " + id + " has an invalid angle");
 
     var exponent = this.reader.getFloat(light, 'exponent', true);
-    if (!exponent)
-        return ("Light with id " + id + " has an invalid exponent");
-
 
     var targetTag = light.getElementsByTagName('target')[0];
-    var target = parseVec3(this.reader, targetTag);
-    if (!target)
-        return ("Light with id " + id + " is missing a valid target!");
+    var target = [this.reader.getFloat(targetTag, 'x', true),
+                  this.reader.getFloat(targetTag, 'y', true), 
+                  this.reader.getFloat(targetTag, 'z', true)];
+
 
     var locationTag = light.getElementsByTagName('location')[0];
-    var location = parseVec3(this.reader, locationTag);
-    if (!location)
-        return ("Light with id " + id + " is missing a valid location!");
+    var location = [this.reader.getFloat(locationTag, 'x', true),
+                    this.reader.getFloat(locationTag, 'y', true), 
+                    this.reader.getFloat(locationTag, 'z', true)];
+
 
     var ambientTag = light.getElementsByTagName('ambient')[0];
-    var ambient = parseRGBA(this.reader, ambientTag);
-    if (!ambient)
-        return ("Light with id " + id + " is missing a valid ambient setting!");
-
+    newLight.setAmbient(this.reader.getFloat(ambientTag, 'r', true),
+                        this.reader.getFloat(ambientTag, 'g', true), 
+                        this.reader.getFloat(ambientTag, 'b', true), 
+                        this.reader.getFloat(ambientTag, 'a', true));
 
     var diffuseTag = light.getElementsByTagName('diffuse')[0];
-    var diffuse = parseRGBA(this.reader, diffuseTag);
-    if (!diffuse)
-        return ("Light with id " + id + " is missing a valid diffuse setting!");
+    newLight.setDiffuse(this.reader.getFloat(diffuseTag, 'r', true),
+                        this.reader.getFloat(diffuseTag, 'g', true), 
+                        this.reader.getFloat(diffuseTag, 'b', true), 
+                        this.reader.getFloat(diffuseTag, 'a', true));
+
 
     var specularTag = light.getElementsByTagName('specular')[0];
-    var specular = parseRGBA(this.reader, specularTag);
-    if (!specular)
-        return ("Light with id " + id + " is missing a valid specular setting!");
+    newLight.setSpecular(this.reader.getFloat(specularTag, 'r', true),
+                         this.reader.getFloat(specularTag, 'g', true), 
+                         this.reader.getFloat(specularTag, 'b', true), 
+                         this.reader.getFloat(specularTag, 'a', true));
+
 
     var direction = [];
     direction[0] = target[0] - location[0];
@@ -285,23 +285,17 @@ MySceneGraph.prototype.parseSpotLight = function(light, n_lights, enabled, id) {
 
     newLight.setPosition(location[0], location[1], location[2], 1);
     newLight.setSpotDirection(direction[0], direction[1], direction[2]);
+
     newLight.setSpotExponent(exponent);
     newLight.setSpotCutOff(angle);
-    newLight.setAmbient(ambient[0], ambient[1], ambient[2], ambient[3]);
-    newLight.setDiffuse(diffuse[0], diffuse[1], diffuse[2], diffuse[3]);
-    newLight.setSpecular(specular[0], specular[1], specular[2], specular[3]);
+
     newLight.setVisible(true);
 
     this.scene.lights.push(newLight);
-    //needed for GUI
     this.scene.lightIDs.push(id);
     newLight.update();
 }
 
-
-/**
- * Parses the textures block from the dsx.
- */
 MySceneGraph.prototype.parseTextures = function(textures) {
     if (textures.nodeName !== 'textures')
         return ('Blocks not ordered correctly. Expected "textures", found "' + textures.nodeName + '".');
