@@ -95,3 +95,4 @@
     this.scene.translate(0, 0, -this.height);
     this.topCircle.display();
 };
+

@@ -344,12 +344,9 @@ MySceneGraph.prototype.parseTextures = function(textures) {
     }
 }
 
-/**
- * Parses the materials block from the dsx.
- */
 MySceneGraph.prototype.parseMaterials = function(materials) {
     if (materials.nodeName !== 'materials')
-        return ('Blocks not ordered correctly. Expected "materials", found "' + materials.nodeName + '".');
+        return ('Invalid Tag Order');
 
     if (!materials.children.length)
         return ('There must be at least one material defined.');
@@ -357,42 +354,45 @@ MySceneGraph.prototype.parseMaterials = function(materials) {
     for (var material of materials.children) {
         var id = this.reader.getString(material, 'id', true);
         if (!id)
-            return ('A material must have an id. One is missing.');
+            return ('Id required for all materials');
 
         if (this.materials[id])
-            return ('Material with id ' + id + ' already exists.');
-
-        var emission = material.getElementsByTagName('emission')[0];
-        var emissionRGBA = parseRGBA(this.reader, emission);
-
-        var ambient = material.getElementsByTagName('ambient')[0];
-        var ambientRGBA = parseRGBA(this.reader, ambient);
-
-        var diffuse = material.getElementsByTagName('diffuse')[0];
-        var diffuseRGBA = parseRGBA(this.reader, diffuse);
-
-        var specular = material.getElementsByTagName('specular')[0];
-        var specularRGBA = parseRGBA(this.reader, specular);
-
-        var shininess = material.getElementsByTagName('shininess')[0];
-        var shininessValue = this.reader.getFloat(shininess, 'value', true);
-
+            return ('Material ' + id + ' already exists.');
 
         var appearance = new CGFappearance(this.scene);
-        appearance.setEmission(emissionRGBA[0], emissionRGBA[1], emissionRGBA[2], emissionRGBA[3]);
-        appearance.setAmbient(ambientRGBA[0], ambientRGBA[1], ambientRGBA[2], ambientRGBA[3]);
-        appearance.setDiffuse(diffuseRGBA[0], diffuseRGBA[1], diffuseRGBA[2], diffuseRGBA[3]);
-        appearance.setSpecular(specularRGBA[0], specularRGBA[1], specularRGBA[2], specularRGBA[3]);
-        appearance.setShininess(shininessValue);
+
+        var emission = material.getElementsByTagName('emission')[0];
+        appearance.setEmission(this.reader.getFloat(emission, 'r', true),
+                               this.reader.getFloat(emission, 'g', true),
+                               this.reader.getFloat(emission, 'b', true),
+                               this.reader.getFloat(emission, 'a', true));
+
+
+        var ambient = material.getElementsByTagName('ambient')[0];
+        appearance.setAmbient(this.reader.getFloat(ambient, 'r', true),
+                              this.reader.getFloat(ambient, 'g', true),
+                              this.reader.getFloat(ambient, 'b', true),
+                              this.reader.getFloat(ambient, 'a', true));
+
+        var diffuse = material.getElementsByTagName('diffuse')[0];
+        appearance.setDiffuse(this.reader.getFloat(diffuse, 'r', true),
+                              this.reader.getFloat(diffuse, 'g', true),
+                              this.reader.getFloat(diffuse, 'b', true),
+                              this.reader.getFloat(diffuse, 'a', true));
+
+        var specular = material.getElementsByTagName('specular')[0];
+        appearance.setSpecular(this.reader.getFloat(specular, 'r', true),
+                               this.reader.getFloat(specular, 'g', true),
+                               this.reader.getFloat(specular, 'b', true),
+                               this.reader.getFloat(specular, 'a', true));
+
+        var shininess = material.getElementsByTagName('shininess')[0];
+        appearance.setShininess(this.reader.getFloat(shininess, 'value', true));
 
         this.materials[id] = appearance;
     }
 }
 
-/**
- * Parses the components block from the dsx.
- * And creates the scene graph.
- */
 MySceneGraph.prototype.parseComponents = function(compsTag) {
     if (compsTag.nodeName !== 'components')
         return ('Blocks not ordered correctly. Expected "components", found "' + compsTag.nodeName + '".');

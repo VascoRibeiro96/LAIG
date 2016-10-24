@@ -141,11 +141,12 @@ Component.prototype.display = function(parent) {
                 wrapS = 'REPEAT';
 
             if (this.texture.length_t < 1)
-                wrapT = 'REPEAT';*/
+                wrapT = 'REPEAT';
 
-            /*this.material.setTextureWrap(wrapS, wrapT);*/
+            this.material.setTextureWrap(wrapS, wrapT);*/
             this.material.apply();
 
+            /*this.texture.amplify(child);*/
             
         }
 
