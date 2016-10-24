@@ -10,14 +10,13 @@ function MySceneGraph(filename, scene) {
 
 
 	this.sceneValues = [];
-	this.transformations = [];
 	this.perspectives = [];
 	this.illumination = [];
 	this.lights = [];
 	this.textures = {};
 	this.materials = {};
 	this.transformations = {};
-	this.primitives = [];
+	this.primitives = {};
 	this.components = [];
 	this.loadedComponents = {};
 	this.parentComponent;
@@ -539,7 +538,7 @@ MySceneGraph.prototype.parsePrimitives= function (rootElement) {
 	var primitivesElems = elems[0].getElementsByTagName('primitive');
 	var ids = [];
 
-	for(i = 0; i < primitivesElems.length; ++i){
+	for(var i = 0; i < primitivesElems.length; ++i){
 		
 		var curPrimitive = primitivesElems[i];
 
@@ -602,11 +601,10 @@ MySceneGraph.prototype.parsePrimitives= function (rootElement) {
 				break;
 
 			default:
-				return "Invalid primitive name";
+				return "Invalid primitive name" + type;
 				break;
 		}
-
-		this.primitives.push([id, primitiveValues]);
+		this.primitives[id] = primitiveValues;
 
 	}
 
@@ -737,12 +735,14 @@ MySceneGraph.prototype.parseComponents= function (rootElement) {
 				return "There needs to be at least one child inside the 'children' block in each component";
 			}
 
+			var allChildren = [];
+
+
 			for (j = 0; j < childComponents.length; ++j){
 
 				var type = childComponents[j].tagName;
 				var curChild = [];
 				var childId = childComponents[j].attributes.getNamedItem('id').value;
-				var allChildren = [];
 				
 				if(type != 'primitiveref' && type != 'componentref'){
 					return "Invalid child name in components.\n Only 'primitiveref' and 'componentref' allowed";
@@ -792,6 +792,7 @@ MySceneGraph.prototype.loadComponents= function (){
 		var id = curComponent[0];
 
 		var component = new MyComponent(this.scene, id);
+
 
 		//process transformations
 
@@ -854,8 +855,6 @@ MySceneGraph.prototype.loadComponents= function (){
 		for(var j = 0; j < textures.length; ++j){
 			var textID = textures[j];
 
-
-
 			component.setTexture(this.textures[textId]);
 		}
 
@@ -869,24 +868,27 @@ MySceneGraph.prototype.loadComponents= function (){
 			var type = curChild[0];
 			var cId = curChild[1];
 
+
 			if(type == 'componentref'){
 				component.children.push(this.loadedComponents[cId]);
-				console.log("Child " + this.loadedComponents[cId] + " added to " + id);
 				this.loadedComponents[cId].parent = component;
 			}
 			else
+			{
+				console.log(this.primitives);
 				component.children.push(this.primitives[cId]);
+			}
 		}
 
 		this.loadedComponents[id] = component;
 	}
 
+
 	//Find Parent Component
 
 	for(let id in this.loadedComponents)
 		if(this.loadedComponents[id].parent == null)
-			this.parentComponent == this.loadedComponents[id];
-
+			this.parentComponent = this.loadedComponents[id];
 }
 
 

@@ -94,7 +94,8 @@ XMLscene.prototype.display = function () {
 	// This is one possible way to do it
 	if (this.graph.loadedOk){
 		this.updateAllLights();
-		this.components['torso'].display();
+
+		//this.parentComponent.display();
 	}
 };
 

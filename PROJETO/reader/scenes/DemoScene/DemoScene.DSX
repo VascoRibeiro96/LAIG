@@ -295,7 +295,7 @@
             
         </component>
 
-        <component id="LeftArm">
+        <component id="leftArm">
         
             <transformation>
                 <scale x="0.7" y="0.7" z="0.6" />
@@ -439,7 +439,7 @@
             </transformation>
        
             <materials>
-                <material id="inherit" />
+                <material id="black" />
             </materials>
 
             <texture id="yellow" />

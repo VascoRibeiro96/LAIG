@@ -140,32 +140,28 @@ MyComponent.prototype.updateTextures = function(textures) {
 Recursive Display of components
 **/
 
-MyComponent.prototype.display = function(parent) {
+MyComponent.prototype.display = function() {
     this.scene.pushMatrix();
 
     this.scene.multMatrix(this.transformationMatrix);
 
     if (this.inheritTexture)
-        this.texture = parent.texture;
+        this.texture = this.parent.texture;
 
     if (this.inheritMaterial)
-        {
-            console.log(this);
-            this.material = parent.material;
-        }
+        this.material = this.parent.material;
     else
         this.material = this.materials[this.currentMaterial];
 
     if (this.texture)
         this.texture.apply(this.material);
-    else
-        this.material.setTexture(null);
 
-    this.material.apply();
+        console.log(this);
 
-    for (let child of this.children) {
-        child.display(this);
+    for (var i = 0; i < this.children.length; ++i){
+        this.children[i].display();
     }
+    
 
     this.scene.popMatrix();
 }
