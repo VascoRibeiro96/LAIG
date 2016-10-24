@@ -11,7 +11,7 @@ function MySceneGraph(filename, scene) {
 
     // File reading
     this.reader = new CGFXMLreader();
-    this.rootId;
+    this.parentComponent;
     this.materials = {};
     this.transformations = {};
     this.primitives = {};
@@ -51,15 +51,15 @@ MySceneGraph.prototype.onXMLReady = function() {
  */
 MySceneGraph.prototype.parseDsx = function(dsx) {
     //Mandatory in order to ensure the blocks order.
-    let scene = dsx.children[0];
-    let views = dsx.children[1];
-    let illumination = dsx.children[2];
-    let lights = dsx.children[3];
-    let textures = dsx.children[4];
-    let materials = dsx.children[5];
-    let transformations = dsx.children[6];
-    let primitives = dsx.children[7];
-    let components = dsx.children[8];
+    var scene = dsx.children[0];
+    var views = dsx.children[1];
+    var illumination = dsx.children[2];
+    var lights = dsx.children[3];
+    var textures = dsx.children[4];
+    var materials = dsx.children[5];
+    var transformations = dsx.children[6];
+    var primitives = dsx.children[7];
+    var components = dsx.children[8];
 
     return (this.parseScene(scene) || this.parseViews(views) || this.parseIllumination(illumination) || this.parseLights(lights) || this.parseTextures(textures) || this.parseMaterials(materials) || this.parseTransformations(transformations) || this.parsePrimitives(primitives) || this.parseComponents(components));
 }
@@ -71,9 +71,9 @@ MySceneGraph.prototype.parseScene = function(scene) {
     if (scene.nodeName !== 'scene')
         return ('Blocks not ordered correctly. Expected "scene", found "' + scene.nodeName + '".');
 
-    this.rootId = this.reader.getString(scene, 'root', true);
+    this.parentComponent = this.reader.getString(scene, 'root', true);
 
-    if (this.rootId == null)
+    if (this.parentComponent == null)
         return 'Scene tag must define a root component.';
 
     this.scene.axisLength = this.reader.getFloat(scene, 'axis_length', false);
@@ -86,12 +86,12 @@ MySceneGraph.prototype.parseViews = function(views) {
     if (views.nodeName !== 'views')
         return ('Blocks not ordered correctly. Expected "views", found "' + views.nodeName + '".');
 
-    let defaultPerspectiveId = this.reader.getString(views, 'default', true);
+    var defaultPerspectiveId = this.reader.getString(views, 'default', true);
 
     if (!(views.children.length > 0))
         return 'You need to have at least one perspective defined.';
 
-    for (let perspective of views.children) {
+    for (var perspective of views.children) {
         //Parse perspective attributes
         var id = this.reader.getString(perspective, 'id', true);
         var fov = this.reader.getFloat(perspective, 'angle', true) * Math.PI / 180; //To radians
@@ -130,10 +130,10 @@ MySceneGraph.prototype.parseIllumination = function(illumination) {
     if (this.doublesided == null || this.local == null)
         return 'Boolean value(s) in illumination missing.';
 
-    let ambientTag = illumination.getElementsByTagName('ambient')[0];
+    var ambientTag = illumination.getElementsByTagName('ambient')[0];
     this.ambient = parseRGBA(this.reader, ambientTag);
 
-    let backgroundTag = illumination.getElementsByTagName('background')[0];
+    var backgroundTag = illumination.getElementsByTagName('background')[0];
     this.bg = parseRGBA(this.reader, backgroundTag);
 
 
@@ -151,7 +151,7 @@ MySceneGraph.prototype.parseLights = function(lights) {
     if (lights.nodeName !== 'lights')
         return ('Blocks not ordered correctly. Expected "lights", found "' + lights.nodeName + '".');
 
-    let error;
+    var error;
     this.ids = {};
 
     if (!lights.children.length) {
@@ -161,19 +161,19 @@ MySceneGraph.prototype.parseLights = function(lights) {
     /*
      * For every light, checks it attributes and if it is an omni or spot light, calling the appropriate parser
      */
-    for (let light of lights.children) {
-        let id = this.reader.getString(light, 'id', true);
+    for (var light of lights.children) {
+        var id = this.reader.getString(light, 'id', true);
         if (!id)
             return ('A light must have an id. One is missing.');
 
-        let enabled = this.reader.getBoolean(light, 'enabled', true);
+        var enabled = this.reader.getBoolean(light, 'enabled', true);
         if (enabled === undefined)
             return ("Light with id " + id + " has no valid 'enabled' attribute");
 
         if (this.ids[id])
             return ('Light with id ' + id + ' already exists.');
 
-        let type = light.nodeName;
+        var type = light.nodeName;
 
         switch (type) {
             case 'omni':
@@ -198,27 +198,27 @@ MySceneGraph.prototype.parseLights = function(lights) {
  */
 MySceneGraph.prototype.parseOmniLight = function(light, n_lights, enabled, id) {
 
-    let locationTag = light.getElementsByTagName('location')[0];
-    let location = parseVec4(this.reader, locationTag);
+    var locationTag = light.getElementsByTagName('location')[0];
+    var location = parseVec4(this.reader, locationTag);
     if (!location)
         return ("Light with id " + id + " is missing a valid location!");
 
-    let ambientTag = light.getElementsByTagName('ambient')[0];
-    let ambient = parseRGBA(this.reader, ambientTag);
+    var ambientTag = light.getElementsByTagName('ambient')[0];
+    var ambient = parseRGBA(this.reader, ambientTag);
     if (!ambient)
         return ("Light with id " + id + " is missing a valid ambient setting!");
 
-    let diffuseTag = light.getElementsByTagName('diffuse')[0];
-    let diffuse = parseRGBA(this.reader, diffuseTag);
+    var diffuseTag = light.getElementsByTagName('diffuse')[0];
+    var diffuse = parseRGBA(this.reader, diffuseTag);
     if (!diffuse)
         return ("Light with id " + id + " is missing a valid diffuse setting!");
 
-    let specularTag = light.getElementsByTagName('specular')[0];
-    let specular = parseRGBA(this.reader, specularTag);
+    var specularTag = light.getElementsByTagName('specular')[0];
+    var specular = parseRGBA(this.reader, specularTag);
     if (!specular)
         return ("Light with id " + id + " is missing a valid specular setting!");
 
-    let newLight = new CGFlight(this.scene, n_lights);
+    var newLight = new CGFlight(this.scene, n_lights);
     if (enabled)
         newLight.enable();
     else
@@ -237,46 +237,46 @@ MySceneGraph.prototype.parseOmniLight = function(light, n_lights, enabled, id) {
 }
 
 MySceneGraph.prototype.parseSpotLight = function(light, n_lights, enabled, id) {
-    let angle = this.reader.getFloat(light, 'angle', true);
+    var angle = this.reader.getFloat(light, 'angle', true);
     if (!angle)
         return ("Light with id " + id + " has an invalid angle");
 
-    let exponent = this.reader.getFloat(light, 'exponent', true);
+    var exponent = this.reader.getFloat(light, 'exponent', true);
     if (!exponent)
         return ("Light with id " + id + " has an invalid exponent");
 
 
-    let targetTag = light.getElementsByTagName('target')[0];
-    let target = parseVec3(this.reader, targetTag);
+    var targetTag = light.getElementsByTagName('target')[0];
+    var target = parseVec3(this.reader, targetTag);
     if (!target)
         return ("Light with id " + id + " is missing a valid target!");
 
-    let locationTag = light.getElementsByTagName('location')[0];
-    let location = parseVec3(this.reader, locationTag);
+    var locationTag = light.getElementsByTagName('location')[0];
+    var location = parseVec3(this.reader, locationTag);
     if (!location)
         return ("Light with id " + id + " is missing a valid location!");
 
-    let ambientTag = light.getElementsByTagName('ambient')[0];
-    let ambient = parseRGBA(this.reader, ambientTag);
+    var ambientTag = light.getElementsByTagName('ambient')[0];
+    var ambient = parseRGBA(this.reader, ambientTag);
     if (!ambient)
         return ("Light with id " + id + " is missing a valid ambient setting!");
 
 
-    let diffuseTag = light.getElementsByTagName('diffuse')[0];
-    let diffuse = parseRGBA(this.reader, diffuseTag);
+    var diffuseTag = light.getElementsByTagName('diffuse')[0];
+    var diffuse = parseRGBA(this.reader, diffuseTag);
     if (!diffuse)
         return ("Light with id " + id + " is missing a valid diffuse setting!");
 
-    let specularTag = light.getElementsByTagName('specular')[0];
-    let specular = parseRGBA(this.reader, specularTag);
+    var specularTag = light.getElementsByTagName('specular')[0];
+    var specular = parseRGBA(this.reader, specularTag);
     if (!specular)
         return ("Light with id " + id + " is missing a valid specular setting!");
 
-    let direction = [];
+    var direction = [];
     direction[0] = target[0] - location[0];
     direction[1] = target[1] - location[1];
     direction[2] = target[2] - location[2];
-    let newLight = new CGFlight(this.scene, n_lights);
+    var newLight = new CGFlight(this.scene, n_lights);
 
     if (enabled)
         newLight.enable();
@@ -306,9 +306,9 @@ MySceneGraph.prototype.parseTextures = function(textures) {
     if (textures.nodeName !== 'textures')
         return ('Blocks not ordered correctly. Expected "textures", found "' + textures.nodeName + '".');
 
-    for (let texture of textures.children) {
+    for (var texture of textures.children) {
 
-        let id = this.reader.getString(texture, 'id', true);
+        var id = this.reader.getString(texture, 'id', true);
         if (!id)
             return ('A texture must have an id. One is missing.');
 
@@ -319,13 +319,13 @@ MySceneGraph.prototype.parseTextures = function(textures) {
             return ('"none" and "inherit" are keywords and cannot be used as texture ids.');
 
 
-        let file = this.reader.getString(texture, 'file', true);
+        var file = this.reader.getString(texture, 'file', true);
 
         if (!file)
             return ('Texture with id ' + id + ' does not have a file associated.');
 
 
-        let length_s = this.reader.getFloat(texture, 'length_s', false);
+        var length_s = this.reader.getFloat(texture, 'length_s', false);
 
         if (!length_s || length_s <= 0) {
             console.log('Texture with id ' + id + ' does not have length_s defined or is invalid. Assuming 1.0.');
@@ -333,7 +333,7 @@ MySceneGraph.prototype.parseTextures = function(textures) {
         }
 
 
-        let length_t = this.reader.getFloat(texture, 'length_t', false);
+        var length_t = this.reader.getFloat(texture, 'length_t', false);
 
         if (!length_t || length_t <= 0) {
             console.log('Texture with id ' + id + ' does not have length_t defined or is invalid. Assuming 1.0.');
@@ -354,31 +354,31 @@ MySceneGraph.prototype.parseMaterials = function(materials) {
     if (!materials.children.length)
         return ('There must be at least one material defined.');
 
-    for (let material of materials.children) {
-        let id = this.reader.getString(material, 'id', true);
+    for (var material of materials.children) {
+        var id = this.reader.getString(material, 'id', true);
         if (!id)
             return ('A material must have an id. One is missing.');
 
         if (this.materials[id])
             return ('Material with id ' + id + ' already exists.');
 
-        let emission = material.getElementsByTagName('emission')[0];
-        let emissionRGBA = parseRGBA(this.reader, emission);
+        var emission = material.getElementsByTagName('emission')[0];
+        var emissionRGBA = parseRGBA(this.reader, emission);
 
-        let ambient = material.getElementsByTagName('ambient')[0];
-        let ambientRGBA = parseRGBA(this.reader, ambient);
+        var ambient = material.getElementsByTagName('ambient')[0];
+        var ambientRGBA = parseRGBA(this.reader, ambient);
 
-        let diffuse = material.getElementsByTagName('diffuse')[0];
-        let diffuseRGBA = parseRGBA(this.reader, diffuse);
+        var diffuse = material.getElementsByTagName('diffuse')[0];
+        var diffuseRGBA = parseRGBA(this.reader, diffuse);
 
-        let specular = material.getElementsByTagName('specular')[0];
-        let specularRGBA = parseRGBA(this.reader, specular);
+        var specular = material.getElementsByTagName('specular')[0];
+        var specularRGBA = parseRGBA(this.reader, specular);
 
-        let shininess = material.getElementsByTagName('shininess')[0];
-        let shininessValue = this.reader.getFloat(shininess, 'value', true);
+        var shininess = material.getElementsByTagName('shininess')[0];
+        var shininessValue = this.reader.getFloat(shininess, 'value', true);
 
 
-        let appearance = new CGFappearance(this.scene);
+        var appearance = new CGFappearance(this.scene);
         appearance.setEmission(emissionRGBA[0], emissionRGBA[1], emissionRGBA[2], emissionRGBA[3]);
         appearance.setAmbient(ambientRGBA[0], ambientRGBA[1], ambientRGBA[2], ambientRGBA[3]);
         appearance.setDiffuse(diffuseRGBA[0], diffuseRGBA[1], diffuseRGBA[2], diffuseRGBA[3]);
@@ -397,10 +397,10 @@ MySceneGraph.prototype.parseComponents = function(compsTag) {
     if (compsTag.nodeName !== 'components')
         return ('Blocks not ordered correctly. Expected "components", found "' + compsTag.nodeName + '".');
 
-    let components = {};
+    var components = {};
 
-    for (let compTag of compsTag.children) {
-        let id = this.reader.getString(compTag, 'id', true);
+    for (var compTag of compsTag.children) {
+        var id = this.reader.getString(compTag, 'id', true);
 
         if (!id)
             return 'A component must have an id. Please provide one.';
@@ -408,13 +408,13 @@ MySceneGraph.prototype.parseComponents = function(compsTag) {
         if (components[id])
             return ('A component with id ' + id + ' already exists.');
 
-        let component = new Component(this.scene, id);
+        var component = new Component(this.scene, id);
 
-        let transformationTag = compTag.getElementsByTagName('transformation')[0];
-        let materialsTag = compTag.getElementsByTagName('materials')[0];
+        var transformationTag = compTag.getElementsByTagName('transformation')[0];
+        var materialsTag = compTag.getElementsByTagName('materials')[0];
 
         //Error checking
-        let error = this.parseComponentTransformations(component, transformationTag);
+        var error = this.parseComponentTransformations(component, transformationTag);
         if (error)
             return error;
 
@@ -425,11 +425,11 @@ MySceneGraph.prototype.parseComponents = function(compsTag) {
         /*
          * Texture parsing
          */
-        let texture = compTag.getElementsByTagName('texture')[0];
+        var texture = compTag.getElementsByTagName('texture')[0];
         if (!texture)
             return ('A component with id ' + id + ' does not have a texture tag.');
 
-        let textureId = this.reader.getString(texture, 'id', true);
+        var textureId = this.reader.getString(texture, 'id', true);
         if (textureId) {
             if (textureId !== 'none' && textureId !== 'inherit' && !this.textures[textureId])
                 return ('No texture with id ' + textureId + ' exists.');
@@ -442,14 +442,14 @@ MySceneGraph.prototype.parseComponents = function(compsTag) {
             return ('A component with id ' + id + ' is missing a texture id');
 
         //Children parsing
-        let childrenTag = compTag.getElementsByTagName('children')[0];
+        var childrenTag = compTag.getElementsByTagName('children')[0];
 
         error = this.parseComponentChildren(components, component, childrenTag)
         if (error)
             return error;
     }
 
-    let error = this.createSceneGraph(components);
+    var error = this.createSceneGraph(components);
 
     if (error)
         return error;
@@ -459,16 +459,16 @@ MySceneGraph.prototype.parseComponents = function(compsTag) {
  * Creates the scene graph used to display the scene
  */
 MySceneGraph.prototype.createSceneGraph = function(components) {
-    for (let id in components) {
-        for (let child of components[id].children) {
+    for (var id in components) {
+        for (var child of components[id].children) {
             components[id].component.addChild(components[child].component);
         }
     }
 
-    if (!components[this.rootId])
+    if (!components[this.parentComponent])
         return 'There is no node with the root id provided.';
 
-    this.scene.rootNode = components[this.rootId].component;
+    this.scene.rootNode = components[this.parentComponent].component;
 
     /*
      * Handle textures inheritance
@@ -489,10 +489,10 @@ MySceneGraph.prototype.createSceneGraph = function(components) {
 MySceneGraph.prototype.parseComponentTransformations = function(component, tag) {
     //Used to prevent the dsx from having transformation ref and other
     //transformations in the same block.
-    let transfRef;
+    var transfRef;
 
-    for (let transfTag of tag.children) {
-        let transformation;
+    for (var transfTag of tag.children) {
+        var transformation;
 
         if (transfTag.nodeName === 'transformationref') {
             /*
@@ -507,7 +507,7 @@ MySceneGraph.prototype.parseComponentTransformations = function(component, tag) 
             else if (transfRef === true)
                 return;
 
-            let id = this.reader.getString(transfTag, 'id', true);
+            var id = this.reader.getString(transfTag, 'id', true);
 
             if (!this.transformations[id])
                 return ('Transformation with id ' + id + ' does not exist.');
@@ -538,8 +538,8 @@ MySceneGraph.prototype.parseComponentMaterials = function(component, tag) {
     if (!tag.children.length)
         return 'There is a component that does not have a material.';
 
-    for (let materialTag of tag.children) {
-        let id = this.reader.getString(materialTag, 'id', true);
+    for (var materialTag of tag.children) {
+        var id = this.reader.getString(materialTag, 'id', true);
 
         if (!id)
             return 'A material in a component is missing its id.';
@@ -561,13 +561,13 @@ MySceneGraph.prototype.parseComponentMaterials = function(component, tag) {
  * In the end, it adds the component and its children to the components dictionary.
  */
 MySceneGraph.prototype.parseComponentChildren = function(components, component, tag) {
-    let children = [];
+    var children = [];
 
-    for (let child of tag.children) {
+    for (var child of tag.children) {
         if (child.nodeName !== 'componentref' && child.nodeName !== 'primitiveref')
             return ('There is a component with id ' + component.getId() + ' with an unexpected child tag.');
 
-        let id = this.reader.getString(child, 'id', true);
+        var id = this.reader.getString(child, 'id', true);
 
         if (!id)
             return ('There is a component with id ' + component.getId() + ' that has a child without id.');
@@ -595,14 +595,14 @@ MySceneGraph.prototype.parsePrimitives = function(primitives) {
     if (primitives.nodeName !== 'primitives')
         return ('Blocks not ordered correctly. Expected "primitives", found "' + primitives.nodeName + '".');
 
-    for (let primitive of primitives.children) {
-        let shape = primitive.children[0];
-        let id = this.reader.getString(primitive, 'id', true);
+    for (var primitive of primitives.children) {
+        var shape = primitive.children[0];
+        var id = this.reader.getString(primitive, 'id', true);
 
         if (!id)
             return 'A primitive must have an id. Please provide one.';
 
-        let object;
+        var object;
 
         switch (shape.nodeName) {
             case 'rectangle':
@@ -619,30 +619,30 @@ MySceneGraph.prototype.parsePrimitives = function(primitives) {
                 break;
             case 'cylinder':
                 {
-                    let base = this.reader.getFloat(shape, 'base', true);
-                    let top = this.reader.getFloat(shape, 'top', true);
-                    let height = this.reader.getFloat(shape, 'height', true);
-                    let slices = this.reader.getFloat(shape, 'slices', true);
-                    let stacks = this.reader.getFloat(shape, 'stacks', true);
+                    var base = this.reader.getFloat(shape, 'base', true);
+                    var top = this.reader.getFloat(shape, 'top', true);
+                    var height = this.reader.getFloat(shape, 'height', true);
+                    var slices = this.reader.getFloat(shape, 'slices', true);
+                    var stacks = this.reader.getFloat(shape, 'stacks', true);
 
                     object = new Cylinder(this.scene, base, top, height, slices, stacks);
                 }
                 break;
             case 'sphere':
                 {
-                    let radius = this.reader.getFloat(shape, 'radius', true);
-                    let slices = this.reader.getFloat(shape, 'slices', true);
-                    let stacks = this.reader.getFloat(shape, 'stacks', true);
+                    var radius = this.reader.getFloat(shape, 'radius', true);
+                    var slices = this.reader.getFloat(shape, 'slices', true);
+                    var stacks = this.reader.getFloat(shape, 'stacks', true);
 
                     object = new Sphere(this.scene, radius, slices, stacks);
                 }
                 break;
             case 'torus':
                 {
-                    let inner = this.reader.getFloat(shape, 'inner', true);
-                    let outer = this.reader.getFloat(shape, 'outer', true);
-                    let slices = this.reader.getInteger(shape, 'slices', true);
-                    let loops = this.reader.getInteger(shape, 'loops', true);
+                    var inner = this.reader.getFloat(shape, 'inner', true);
+                    var outer = this.reader.getFloat(shape, 'outer', true);
+                    var slices = this.reader.getInteger(shape, 'slices', true);
+                    var loops = this.reader.getInteger(shape, 'loops', true);
 
                     object = new Torus(this.scene, inner, outer, slices, loops);
                 }
@@ -677,8 +677,8 @@ MySceneGraph.prototype.parseTransformations = function(transformations) {
     this.transformations = []; //dictionary
 
     // this for loop gets the ID of the transformation and, if it is not already in use, stores it in the dictionary
-    for (let transf of transformations.children) {
-        let transfID = this.reader.getString(transf, 'id', true);
+    for (var transf of transformations.children) {
+        var transfID = this.reader.getString(transf, 'id', true);
         if (!transfID)
             return 'Missing transformation ID.';
 
@@ -688,7 +688,7 @@ MySceneGraph.prototype.parseTransformations = function(transformations) {
 
         this.transformations[transfID] = new Transformation(this.scene);
 
-        for (let operations of transf.children) {
+        for (var operations of transf.children) {
             this.transformations[transfID].multiply(parseTransformation(this.scene, this.reader, operations));
         }
     }
