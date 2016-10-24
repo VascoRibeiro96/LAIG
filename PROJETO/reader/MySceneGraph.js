@@ -531,73 +531,79 @@ MySceneGraph.prototype.parseComponentChildren = function(components, component, 
             component.addChild(this.primitives[id]);
     }
 
-    components[component.getId()] = {
+    components[component.id] = {
         'component': component,
         'children': children
     };
 }
 
-/**
- *  Parses the primitives from the dsx root element.
- */
+
 MySceneGraph.prototype.parsePrimitives = function(primitives) {
     if (primitives.nodeName !== 'primitives')
-        return ('Blocks not ordered correctly. Expected "primitives", found "' + primitives.nodeName + '".');
+        return ('Tag not ordered correctly');
 
     for (var primitive of primitives.children) {
         var shape = primitive.children[0];
         var id = this.reader.getString(primitive, 'id', true);
 
         if (!id)
-            return 'A primitive must have an id. Please provide one.';
+            return 'No ID in primitive';
 
         var object;
 
         switch (shape.nodeName) {
             case 'rectangle':
                 object = new Rectangle(this.scene,
-                    parseVec2(this.reader, shape, '1'),
-                    parseVec2(this.reader, shape, '2')
+                    this.reader.getFloat(shape, 'x1', true),
+                    this.reader.getFloat(shape, 'y1', true),
+                    this.reader.getFloat(shape, 'x2', true),
+                    this.reader.getFloat(shape, 'y2', true)
                 );
                 break;
+
             case 'triangle':
                 object = new Triangle(this.scene,
-                    parseVec3(this.reader, shape, '1'),
-                    parseVec3(this.reader, shape, '2'),
-                    parseVec3(this.reader, shape, '3'));
+                    this.reader.getFloat(shape, 'x1', true),
+                    this.reader.getFloat(shape, 'y1', true),
+                    this.reader.getFloat(shape, 'z1', true),
+                    this.reader.getFloat(shape, 'x2', true),
+                    this.reader.getFloat(shape, 'y2', true),
+                    this.reader.getFloat(shape, 'z2', true),
+                    this.reader.getFloat(shape, 'x3', true),
+                    this.reader.getFloat(shape, 'y3', true),
+                    this.reader.getFloat(shape, 'z3', true)
+                );
                 break;
+
             case 'cylinder':
-                {
-                    var base = this.reader.getFloat(shape, 'base', true);
-                    var top = this.reader.getFloat(shape, 'top', true);
-                    var height = this.reader.getFloat(shape, 'height', true);
-                    var slices = this.reader.getFloat(shape, 'slices', true);
-                    var stacks = this.reader.getFloat(shape, 'stacks', true);
-
-                    object = new Cylinder(this.scene, base, top, height, slices, stacks);
-                }
+                object = new Cylinder(this.scene,
+                    this.reader.getFloat(shape, 'base', true),
+                    this.reader.getFloat(shape, 'top', true),
+                    this.reader.getFloat(shape, 'height', true),
+                    this.reader.getFloat(shape, 'slices', true),
+                    this.reader.getFloat(shape, 'stacks', true)
+                );
                 break;
+
             case 'sphere':
-                {
-                    var radius = this.reader.getFloat(shape, 'radius', true);
-                    var slices = this.reader.getFloat(shape, 'slices', true);
-                    var stacks = this.reader.getFloat(shape, 'stacks', true);
-
-                    object = new Sphere(this.scene, radius, slices, stacks);
-                }
+                    object = new Sphere(this.scene,
+                        this.reader.getFloat(shape, 'radius', true),
+                        this.reader.getFloat(shape, 'slices', true),
+                        this.reader.getFloat(shape, 'stacks', true)
+                    );
                 break;
+
             case 'torus':
-                {
-                    var inner = this.reader.getFloat(shape, 'inner', true);
-                    var outer = this.reader.getFloat(shape, 'outer', true);
-                    var slices = this.reader.getInteger(shape, 'slices', true);
-                    var loops = this.reader.getInteger(shape, 'loops', true);
-
-                    object = new Torus(this.scene, inner, outer, slices, loops);
-                }
+                    object = new Torus(this.scene,
+                        this.reader.getFloat(shape, 'inner', true),
+                        this.reader.getFloat(shape, 'outer', true),
+                        this.reader.getInteger(shape, 'slices', true),
+                        this.reader.getInteger(shape, 'loops', true)
+                    );
                 break;
+
             default:
-                return ('Unknown primitive found ' + shape.nodeName + '.');
+                return ('Invalid Primitive:' + shape.nodeName);
                 break;
         }
 
