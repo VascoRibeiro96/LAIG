@@ -1,73 +1,58 @@
 /**
  * Rectangle
- * @param gl {WebGLRenderingContext}
  * @constructor
  */
+ function Rectangle(scene, x1, y1, x2, y2) {
+ 	CGFobject.call(this,scene);
 
-function Rectangle(scene, point1, point2, minS, maxS, minT, maxT) {
-    CGFobject.call(this, scene);
+	x1 = typeof x1 !== 'undefined' ? x1 : 0.0;
+	x2 = typeof x2 !== 'undefined' ? x2 : 1.0;
+	y1 = typeof y1 !== 'undefined' ? y1 : 0.0;
+	y2 = typeof y2 !== 'undefined' ? y2 : 1.0;
+	this.x1 = x1;
+	this.x2 = x2;
+	this.y1 = y1;
+	this.y2 = y2;
 
-    this.point1 = point1;
-    this.point2 = point2;
-
-    if (typeof minS == 'undefined') {
-        this.minS = 0;
-    } else {
-        this.minS = minS;
-    }
-
-    if (typeof maxS == 'undefined') {
-        this.maxS = 1;
-    } else {
-        this.maxS = maxS;
-    }
-
-    if (typeof minT == 'undefined') {
-        this.minT = 0;
-    } else {
-        this.minT = minT;
-    }
-
-    if (typeof maxT == 'undefined') {
-        this.maxT = 1;
-    } else {
-        this.maxT = maxT;
-    }
-
-    this.initBuffers();
-};
+ 	this.initBuffers();
+ };
 
 Rectangle.prototype = Object.create(CGFobject.prototype);
 Rectangle.prototype.constructor = Rectangle;
 
 Rectangle.prototype.initBuffers = function() {
-    this.vertices = [this.point1[0], this.point1[1], 0, //0
-        this.point1[0], this.point2[1], 0, //1
-        this.point2[0], this.point1[1], 0, //2
-        this.point2[0], this.point2[1], 0 //3
-    ];
 
-    this.indices = [
-        2, 1, 0,
-        3, 1, 2
-    ];
+ 	this.vertices = [
+ 	this.x1, this.y1, 0,
+ 	this.x1, this.y2, 0,
+ 	this.x2, this.y1, 0,
+ 	this.x2, this.y2, 0
+ 	];
+
+ 	this.indices = [
+ 	2, 1, 0, 
+ 	3, 1, 2
+ 	];
+
+ 	this.primitiveType = this.scene.gl.TRIANGLES;
 
     this.normals = [
-        0, 0, 1,
-        0, 0, 1,
-        0, 0, 1,
-        0, 0, 1
-
+    0, 0, 1,
+    0, 0, 1,
+    0, 0, 1,
+    0, 0, 1
     ];
 
-    this.originalTexCoords = [
-        this.minS, this.maxT,
-        this.minS, this.minT,
-        this.maxS, this.maxT,
-        this.maxS, this.minT
-    ];
+    this.texCoords = [
 
-    this.texCoords = this.originalTexCoords.slice();
-    this.primitiveType = this.scene.gl.TRIANGLES;
-    this.initGLBuffers();
-};
+	this.x1,this.y2,
+	this.x1,this.y1,
+	this.x2,this.y2,
+	this.x2,this.y1
+	
+	];
+    
+
+    
+ 	this.initGLBuffers();
+ };

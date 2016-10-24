@@ -1,5 +1,5 @@
 /**
- * MyCircle
+ * Circle
  * @constructor
  */
 function Circle(scene, slices, radius) {

@@ -1,5 +1,5 @@
 /**
- * MyCylinder
+ * Cylinder
  * @constructor
  */
  function Cylinder(scene, base, top, height, slices, stacks) {
