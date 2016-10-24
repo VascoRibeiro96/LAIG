@@ -68,6 +68,3 @@ Torus.prototype.initBuffers = function() {
     this.initGLBuffers();
 
 }
-
-
-
