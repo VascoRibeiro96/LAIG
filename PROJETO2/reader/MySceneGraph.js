@@ -14,6 +14,7 @@ function MySceneGraph(filename, scene) {
     this.parentComponent;
     this.materials = {};
     this.transformations = {};
+	this.animations = {};
     this.primitives = {};
     this.textures = {};
 
@@ -58,10 +59,11 @@ MySceneGraph.prototype.parseDsx = function(dsx) {
     var textures = dsx.children[4];
     var materials = dsx.children[5];
     var transformations = dsx.children[6];
-    var primitives = dsx.children[7];
-    var components = dsx.children[8];
+	var animations = dsx.children[7]
+    var primitives = dsx.children[8];
+    var components = dsx.children[9];
 
-    return (this.parseScene(scene) || this.parseViews(views) || this.parseIllumination(illumination) || this.parseLights(lights) || this.parseTextures(textures) || this.parseMaterials(materials) || this.parseTransformations(transformations) || this.parsePrimitives(primitives) || this.parseComponents(components));
+    return (this.parseScene(scene) || this.parseViews(views) || this.parseIllumination(illumination) || this.parseLights(lights) || this.parseTextures(textures) || this.parseMaterials(materials) || this.parseTransformations(transformations) || this.parseAnimations(animations) || this.parsePrimitives(primitives) || this.parseComponents(components));
 }
 
 MySceneGraph.prototype.parseScene = function(scene) {
@@ -602,6 +604,90 @@ MySceneGraph.prototype.parseTransformations = function(transformations) {
         }
     }
 };
+
+
+MySceneGraph.prototype.parseAnimations = function(animations) {
+    if (animations.nodeName != 'animations')
+        return ('Invalid tag order');
+
+    var error;
+    this.ids = {};
+
+    if (!animations.children.length) {
+        return "No animations detected in the dsx";
+    }
+
+
+    for (var animation of animations.children) {
+        var id = this.reader.getString(animation, 'id', true);
+        if (!id)
+            return ('An animation must have an id. One is missing.');
+
+        var span = this.reader.getFloat(animation, 'span', true);
+        if (span == undefined)
+            return ("Animation with id " + id + " has no valid 'span' attribute");
+
+        if (this.ids[id])
+            return ('Light with id ' + id + ' already exists.');
+
+        var type = animation.nodeName;
+
+        switch (type) {
+            case 'linear':
+                error = this.parseLinearAnimation(animation, span, id);
+                break;
+
+            case 'circular':
+                error = this.parseCircularAnimation(animation, span, id);
+                break;
+
+            default:
+                error = ("Animation with id " + id + " has an invalid type");
+        }
+        this.ids[id] = id;
+    }
+
+    return error;
+};
+
+MySceneGraph.prototype.parseLinearAnimation = function(animation, span, id) {
+
+	var controlpoints;
+	
+    for(var linear of animation.children){
+		
+		var controlpoint = animation.getElementsByTagName('controlpoint')[0];
+        var xx = this.reader.getFloat(controlpoint, 'xx', true);
+        var yy = this.reader.getFloat(controlpoint, 'yy', true);
+		var zz = this.reader.getFloat(controlpoint, 'zz', true);
+         
+		var tmpcontrol = [xx, yy, zz];
+		controlpoints.push(tmpcontrol);
+		
+	}
+	
+        
+    
+    this.animations[id] = new AnimationLinear(span, controlpoints);
+ 
+}
+
+MySceneGraph.prototype.parseCircularAnimation = function(animation, span, id) {
+
+	
+        var centerx = this.reader.getFloat(animation, 'centerx', true);
+        var centery = this.reader.getFloat(animation, 'centery', true);
+		var centerz = this.reader.getFloat(animation, 'centerz', true);
+         
+		var radius = this.reader.getFloat(animation, 'radius', true);
+        var startang = this.reader.getFloat(animation, 'startang', true);
+		var rotang = this.reader.getFloat(animation, 'rotang', true);
+	
+        
+    
+    this.animations[id] = new AnimationCircular(span, centerx, centery, centerz, radius, startang,rotang);
+ 
+}
 
 /**
  * Callback to be executed on any read error
