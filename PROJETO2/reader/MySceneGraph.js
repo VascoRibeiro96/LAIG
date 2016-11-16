@@ -599,6 +599,9 @@ MySceneGraph.prototype.parsePrimitives = function(primitives) {
 						object = new Patch(this.scene, orderU, orderV, partsU, partsV, controlpoints);
 					}
 				break;
+			case 'vehicle':
+					object = new Vehicle(this.scene);
+				break;
             default:
                 return ('Invalid Primitive:' + shape.nodeName);
                 break;
