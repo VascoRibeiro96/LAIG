@@ -576,7 +576,29 @@ MySceneGraph.prototype.parsePrimitives = function(primitives) {
 							
 					);
 				break;
-
+			case 'patch':
+					{
+						var orderU = this.reader.getInteger(shape, 'orderU', true);
+						var orderV = this.reader.getInteger(shape, 'orderV', true);
+						var partsU = this.reader.getInteger(shape, 'partsU', true);
+						var partsV = this.reader.getInteger(shape, 'partsV', true);
+						
+						var controlpoints;
+						
+						 for(var linear of shape.children){
+								var controlpoint = shape.getElementsByTagName('controlpoint')[0];
+								var xx = this.reader.getFloat(controlpoint, 'xx', true);
+								var yy = this.reader.getFloat(controlpoint, 'yy', true);
+								var zz = this.reader.getFloat(controlpoint, 'zz', true);
+         
+								var tmpcontrol = [xx, yy, zz];
+								controlpoints.push(tmpcontrol);
+		
+							}
+							
+						object = new Patch(this.scene, orderU, orderV, partsU, partsV, controlpoints);
+					}
+				break;
             default:
                 return ('Invalid Primitive:' + shape.nodeName);
                 break;
