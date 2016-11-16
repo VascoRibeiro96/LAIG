@@ -567,6 +567,15 @@ MySceneGraph.prototype.parsePrimitives = function(primitives) {
                         this.reader.getInteger(shape, 'loops', true)
                     );
                 break;
+			case 'plane':
+					object = new Plane(this.scene,
+							this.reader.getFloat(shape, 'dimX', true),
+							this.reader.getFloat(shape, 'dimY', true),
+							this.reader.getInteger(shape, 'partsX', true),
+							this.reader.getInteger(shape, 'partsY', true)
+							
+					);
+				break;
 
             default:
                 return ('Invalid Primitive:' + shape.nodeName);
