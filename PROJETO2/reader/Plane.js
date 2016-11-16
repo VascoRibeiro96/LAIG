@@ -1,5 +1,6 @@
 function Plane(scene, dimX, dimY, partsX, partsY){
 	
+	CGFobject.call(this,scene);
 	this.scene = scene;
 	this.dimX = dimX;
 	this.dimY = dimY;
