@@ -668,24 +668,26 @@ MySceneGraph.prototype.parseLinearAnimation = function(animation, span, id) {
 	
         
     
-    this.animations[id] = new AnimationLinear(span, controlpoints);
+    this.animations[id] = new LinearAnimation(this.scene, span, controlpoints);
  
 }
 
 MySceneGraph.prototype.parseCircularAnimation = function(animation, span, id) {
 
-	
+		
         var centerx = this.reader.getFloat(animation, 'centerx', true);
         var centery = this.reader.getFloat(animation, 'centery', true);
 		var centerz = this.reader.getFloat(animation, 'centerz', true);
-         
+        
+		var center = [centerx, centery, centerz];
+		
 		var radius = this.reader.getFloat(animation, 'radius', true);
         var startang = this.reader.getFloat(animation, 'startang', true);
 		var rotang = this.reader.getFloat(animation, 'rotang', true);
 	
         
     
-    this.animations[id] = new AnimationCircular(span, centerx, centery, centerz, radius, startang,rotang);
+    this.animations[id] = new CircularAnimation(span, center, radius, startang,rotang);
  
 }
 
