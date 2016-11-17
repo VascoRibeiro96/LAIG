@@ -38,7 +38,7 @@ function Patch(scene, orderU, orderV, partsU, partsV, controlPoints){
 	}
 	
 	//Create Surface
-	this.nurbsSurface = new CGFnurbsSurface(this.orderU, this.orderV, knotsU, knotsV, this.controlPoints); 	
+	this.nurbsSurface = new CGFnurbsSurface(this.orderU, this.orderV, knotsU, knotsV, this.controlvertexes); 	
 	var nurbsSurface = this.nurbsSurface;
 	Points = function(u, v) {
 		return nurbsSurface.getPoint(u, v);

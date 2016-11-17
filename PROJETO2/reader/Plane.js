@@ -7,7 +7,7 @@ function Plane(scene, dimX, dimY, partsX, partsY){
 	this.partsX = partsX;
 	this.partsY = partsY;
 		
-	this.ontrolPoints = [
+	this.controlPoints = [
                     [-this.dimX/2,-this.dimY/2,0],
                     [-this.dimX/2,this.dimY/2,0],
                     [this.dimX/2,-this.dimY/2,0],
