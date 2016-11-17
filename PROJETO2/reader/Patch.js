@@ -6,7 +6,6 @@ function Patch(scene, orderU, orderV, partsU, partsV, controlPoints){
 	this.orderV = orderV;
 	this.partsU = partsU;
 	this.partsV = partsV;
-	this.controlPoints = this.preparePoints(controlPoints);
 
 	//Prepare knotsV and knotsU
 	var knotsU;
@@ -32,7 +31,7 @@ function Patch(scene, orderU, orderV, partsU, partsV, controlPoints){
 		var temp = [];
 		for(var j = 0; j < (order+1); ++j) {
 			controlPoints[vertex].push(1);
-			temp.push(controlPoints[vertex++]);
+			temp.push(this.controlPoints[vertex++]);
 		}
 		controlvertexes.push(temp);
 	}
