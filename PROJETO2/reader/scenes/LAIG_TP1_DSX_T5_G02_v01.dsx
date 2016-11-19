@@ -160,7 +160,14 @@
         </transformation>
     </transformations>
 
+    <animations>
 
+     <animation id="testeAnimation" span="10" type="linear">
+        <controlpoint xx="1" yy="1" zz="1 />
+        </animation>
+
+    </animations>
+ 
     <primitives>
 
         <!-- Deve existir um ou mais blocos "primitive" -->
