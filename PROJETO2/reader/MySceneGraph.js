@@ -52,6 +52,7 @@ MySceneGraph.prototype.onXMLReady = function() {
  */
 MySceneGraph.prototype.parseDsx = function(dsx) {
     //Mandatory in order to ensure the blocks order.
+
     var scene = dsx.children[0];
     var views = dsx.children[1];
     var illumination = dsx.children[2];
@@ -67,8 +68,10 @@ MySceneGraph.prototype.parseDsx = function(dsx) {
 }
 
 MySceneGraph.prototype.parseScene = function(scene) {
+
     if (scene.nodeName != 'scene')
         return ('Invalid tag order');
+
 
     this.parentComponent = this.reader.getString(scene, 'root', true);
 
@@ -79,6 +82,9 @@ MySceneGraph.prototype.parseScene = function(scene) {
 }
 
 MySceneGraph.prototype.parseViews = function(views) {
+
+
+
     if (views.nodeName != 'views')
         return ('Invalid tag order');
 
@@ -114,6 +120,10 @@ MySceneGraph.prototype.parseViews = function(views) {
 }
 
 MySceneGraph.prototype.parseIllumination = function(illumination) {
+
+
+
+
     if (illumination.nodeName != 'illumination')
         return ('Invalid tag order');
 
@@ -145,6 +155,9 @@ MySceneGraph.prototype.parseIllumination = function(illumination) {
 
 
 MySceneGraph.prototype.parseLights = function(lights) {
+
+
+
     if (lights.nodeName != 'lights')
         return ('Invalid tag order');
 
@@ -292,6 +305,9 @@ MySceneGraph.prototype.parseSpotLight = function(light, n_lights, enabled, id) {
 }
 
 MySceneGraph.prototype.parseTextures = function(textures) {
+
+
+
     if (textures.nodeName != 'textures')
         return ('Invalid tag order');
 
@@ -391,6 +407,7 @@ MySceneGraph.prototype.parseComponents = function(compsTag) {
 
         var transformationTag = compTag.getElementsByTagName('transformation')[0];
         var materialsTag = compTag.getElementsByTagName('materials')[0];
+    	var animationTag = compTag.getElementsByTagName('animation')[0];
 
         //Transformations
 
@@ -412,6 +429,23 @@ MySceneGraph.prototype.parseComponents = function(compsTag) {
             component.transform(transformation);
         }
     }
+
+
+
+
+    	//Animations
+    	if(animationTag)
+    		for(var aniTag of animationTag.children) {
+
+    			var animation;
+    			var id = this.reader.getString(aniTag, 'id', true);
+
+    			if(!this.animations[id])
+    				return('Animation ' + id + ' does not exist.');
+
+    			animation = this.animations[id];
+    			component.animations.push(animation);
+    		}
 
         //Materials
 
@@ -505,8 +539,11 @@ MySceneGraph.prototype.parseComponentChildren = function(components, component, 
 
 
 MySceneGraph.prototype.parsePrimitives = function(primitives) {
+
     if (primitives.nodeName != 'primitives')
         return ('Invalid Tag order');
+
+
 
     for (var primitive of primitives.children) {
         var shape = primitive.children[0];
@@ -615,6 +652,8 @@ MySceneGraph.prototype.parsePrimitives = function(primitives) {
 }
 
 MySceneGraph.prototype.parseTransformations = function(transformations) {
+
+
     if (transformations.nodeName != 'transformations')
         return ('Invalid tag order');
 
@@ -651,8 +690,9 @@ MySceneGraph.prototype.parseAnimations = function(animations) {
         return "No animations detected in the dsx";
     }
 
+   	var listAnimations = animations.getElementsByTagName('animation');
 
-    for (var animation of animations.children) {
+    for (var animation of listAnimations) {
         var id = this.reader.getString(animation, 'id', true);
         if (!id)
             return ('An animation must have an id. One is missing.');
@@ -664,7 +704,7 @@ MySceneGraph.prototype.parseAnimations = function(animations) {
         if (this.ids[id])
             return ('Light with id ' + id + ' already exists.');
 
-        var type = animation.nodeName;
+        var type = this.reader.getString(animation, 'type', true);
 
         switch (type) {
             case 'linear':
@@ -686,23 +726,20 @@ MySceneGraph.prototype.parseAnimations = function(animations) {
 
 MySceneGraph.prototype.parseLinearAnimation = function(animation, span, id) {
 
-	var controlpoints;
-	
-    for(var linear of animation.children){
-		
-		var controlpoint = animation.getElementsByTagName('controlpoint')[0];
-        var xx = this.reader.getFloat(controlpoint, 'xx', true);
-        var yy = this.reader.getFloat(controlpoint, 'yy', true);
-		var zz = this.reader.getFloat(controlpoint, 'zz', true);
-         
+	var finalControlPoints = [];
+
+	var controlPoints = animation.getElementsByTagName('controlpoint');
+
+    for(var point of controlPoints){
+        var xx = this.reader.getFloat(point, 'xx', true);
+        var yy = this.reader.getFloat(point, 'yy', true);
+		var zz = this.reader.getFloat(point, 'zz', true);
+
 		var tmpcontrol = [xx, yy, zz];
-		controlpoints.push(tmpcontrol);
-		
-	}
-	
-        
+		finalControlPoints.push(tmpcontrol);	
+	}        
     
-    this.animations[id] = new LinearAnimation(this.scene, span, controlpoints);
+    this.animations[id] = new LinearAnimation(this.scene, span, finalControlPoints);
  
 }
 
@@ -721,7 +758,7 @@ MySceneGraph.prototype.parseCircularAnimation = function(animation, span, id) {
 	
         
     
-    this.animations[id] = new CircularAnimation(span, center, radius, startang,rotang);
+    this.animations[id] = new CircularAnimation(this.scene, span, center, radius, startang,rotang);
  
 }
 

@@ -1,11 +1,14 @@
 function LinearAnimation(scene, span, controlpoints){
 	
-	MyAnimation.call(this);
+	Animation.call(this);
 	
 	this.scene = scene;
 	this.span = span;
 	this.controlpoints = controlpoints;
-	
+	this.currentDistance = 0;
+	this.curSeg = 0;
+	this.numSegs = this.controlpoints.length - 1;
+	this.rotationAngle = 0;
 	this.distance = 0;
 	this.vectorDistances = [];
 	
@@ -27,37 +30,42 @@ LinearAnimation.prototype.apply = function(span) {
 	if (span > this.span)
 		span = this.span;
 
-	this.currentDistance = this.velocity * span;
 
-	// find current segment
-	var i = 0;
-	while (this.currentDistance > this.vectorDistances[i] && i < this.vectorDistances.length)
-		i++;
 
-	// get control points from current segment
-	var p1 = this.controlpoints[i];
-	var p2 = this.controlpoints[i + 1];
+	// Makes the transformation for completed segments:
 
-	// calculate displacement and apply translation
-	var lastSegDist;
-	if (i == 0)
-		lastSegDist = 0;
-	else
-		lastSegDist = this.vectorDistances[i - 1];
+	for(var i = 0; i < this.curSeg; i++)
+	{
+		var p1 = this.controlpoints[i];
+		var p2 = this.controlpoints[i+1];
+		this.scene.translate((p2[0] - p1[0]), (p2[1] - p1[1]), (p2[2] - p1[2]));
+	}
 
-	var displacement = (this.currentDistance - lastSegDist) / (this.vectorDistances[i] - lastSegDist);
-	this.scene.translate((p2[0] - p1[0]) * displacement + p1[0], (p2[1] - p1[1]) * displacement + p1[1], (p2[2] - p1[2]) * displacement + p1[2]);
 
-	// calculate rotation angle and apply rotation
-	var rotationAngle = Math.atan((p2[0] - p1[0]) / (p2[2] - p1[2]));
 
-	if (p2[2] - p1[2] < 0)
-		rotationAngle += Math.PI;
+	if(this.curSeg < this.numSegs){
 
-	if (p2[0] - p1[0] == 0 && p2[2] - p1[2] == 0)
-		rotationAngle = this.preAngle;
+		this.currentDistance += this.velocity * span;
+		
 
-	this.preAngle = rotationAngle;
+		// get control points from current segment
+		var p1 = this.controlpoints[this.curSeg];
+		var p2 = this.controlpoints[i + 1];
 
-	this.scene.rotate(rotationAngle, 0, 1, 0);
+		this.rotationAngle = Math.atan((p2[0] - p1[0]) / (p2[2] - p1[2]))
+
+		var displacement = this.currentDistance / this.vectorDistances[this.curSeg];
+		this.scene.translate((p2[0] - p1[0]) * displacement, (p2[1] - p1[1]) * displacement, (p2[2] - p1[2]) * displacement);
+		
+
+
+
+		if(this.currentDistance >= this.vectorDistances[this.curSeg]){
+			this.curSeg++;
+			this.currentDistance = 0;
+		}
+	}
+
+	this.scene.rotate(this.rotationAngle, 0, 1, 0);
+
 }

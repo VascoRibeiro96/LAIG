@@ -12,6 +12,7 @@ function Component(scene, id) {
     this.children = [];
     this.currentMaterial = 0;
     this.transformation = new Transformation(scene);
+    this.animations = [];
     this.parent = null;
 }
 
@@ -67,7 +68,7 @@ Component.prototype.updateTextures = function(textures) {
     }
 }
 
-Component.prototype.display = function(parent) {
+Component.prototype.display = function(parent, elaspedTime) {
     this.scene.pushMatrix();
     this.scene.multMatrix(this.transformation.getMatrix());
 
@@ -86,10 +87,13 @@ Component.prototype.display = function(parent) {
 
     this.material.apply();
 
+    for(let animation of this.animations)
+        animation.apply(elaspedTime);   
+
     for (let child of this.children) {
  
         this.material.apply();
-        child.display(this);
+        child.display(this, elaspedTime);
     }
 
     this.scene.popMatrix();
