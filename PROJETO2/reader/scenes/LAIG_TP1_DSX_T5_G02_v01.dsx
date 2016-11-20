@@ -114,6 +114,8 @@
 		<texture id="clock" file="assets/clock.png" length_s="0.6" length_t="1" />
 		<texture id="tree" file="assets/tree.jpg" length_s="0.6" length_t="1" />
 		<texture id="star" file="assets/star.jpg" length_s="0.6" length_t="1" />
+        <texture id="chessboard" file="assets/chess.jpg" length_s="1" length_t="1" />
+
     </textures>
 
 
@@ -217,6 +219,13 @@
             <plane dimX="1" dimY="1" partsX="10" partsY="10" />
         </primitive>
 
+        <primitive id="chessboard">
+            <chessboard du="8" dv="8" textureref="chessboard" su="2" sv="2">
+                <c1 r="0" g="0" b="0" a="1" />
+                <c2 r="1" g="1" b="1" a="1" />
+                <cs r="1" g="0" b="0" a="1" />
+            </chessboard>
+        </primitive>
       
     </primitives>
 
@@ -269,7 +278,7 @@
 				<componentref id="chandelier" />
 				<componentref id="clock" />
 				<componentref id="tree" />
-                <primitiveref id="plane" />
+                <primitiveref id="chessboard" />
             </children>
 
         </component>

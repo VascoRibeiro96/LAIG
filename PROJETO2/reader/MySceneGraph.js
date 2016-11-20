@@ -638,6 +638,51 @@ MySceneGraph.prototype.parsePrimitives = function(primitives) {
 			case 'vehicle':
 					object = new Vehicle(this.scene);
 				break;
+			case 'chessboard':
+					{
+						var du = this.reader.getFloat(shape, 'du', true);
+						var dv = this.reader.getFloat(shape, 'dv', true);
+						var textureid = this.reader.getString(shape, 'textureref', true);
+
+						if(!this.textures[textureid]){
+							return "No texture with id " + textureid;
+							break;
+						}
+
+						var su = this.reader.getFloat(shape, 'su', true);
+						var sv = this.reader.getFloat(shape, 'sv', true);
+
+
+						var c1Tag = shape.getElementsByTagName('c1')[0];
+
+						var r1 = this.reader.getFloat(c1Tag, 'r', true);
+						var g1 = this.reader.getFloat(c1Tag, 'g', true);
+						var b1 = this.reader.getFloat(c1Tag, 'b', true);
+						var a1 = this.reader.getFloat(c1Tag, 'a', true);
+
+
+						var c2Tag = shape.getElementsByTagName('c2')[0];
+
+						var r2 = this.reader.getFloat(c2Tag, 'r', true);
+						var g2 = this.reader.getFloat(c2Tag, 'g', true);
+						var b2 = this.reader.getFloat(c2Tag, 'b', true);
+						var a2 = this.reader.getFloat(c2Tag, 'a', true);
+
+
+						var csTag = shape.getElementsByTagName('cs')[0];
+
+						var rs = this.reader.getFloat(csTag, 'r', true);
+						var gs = this.reader.getFloat(csTag, 'g', true);
+						var bs = this.reader.getFloat(csTag, 'b', true);
+						var as = this.reader.getFloat(csTag, 'a', true);
+
+						var c1 = [r1, g1, b1, a1];
+						var c2 = [r2, g2, b2, a2];
+						var cs = [rs, gs, bs, as];
+
+						object = new Chessboard(this.scene, du, dv, this.textures[textureid], su, sv, c1, c2, cs);
+						break;
+					}
             default:
                 return ('Invalid Primitive:' + shape.nodeName);
                 break;

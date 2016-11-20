@@ -1,9 +1,9 @@
-function Chessboard(scene, du, dv, textureid, su, sv, c1, c2, cs){
+function Chessboard(scene, du, dv, texture, su, sv, c1, c2, cs){
   CGFobject.call(this, scene);
   this.scene = scene;
   this.du = du;
   this.dv = dv;
-  this.texture = textureid;
+  this.texture = texture;
   this.su = su;
   this.sv = sv;
   this.c1 = vec4.fromValues(c1[0], c1[1], c1[2], c1[3]);
@@ -32,6 +32,7 @@ Chessboard.prototype.constructor = Chessboard;
 
 Chessboard.prototype.display = function(){
   this.scene.pushMatrix();
+  this.texture.apply(this.mat);
   this.mat.apply();
   this.scene.setActiveShader(this.shader);
   this.plane.display();
