@@ -52,7 +52,8 @@ LinearAnimation.prototype.apply = function(span) {
 		var p1 = this.controlpoints[this.curSeg];
 		var p2 = this.controlpoints[i + 1];
 
-		this.rotationAngle = Math.atan((p2[0] - p1[0]) / (p2[2] - p1[2]))
+		if(this.curSeg != 0) //Nao roda para o primeiro segmento
+			this.rotationAngle = Math.atan((p2[0] - p1[0]) / (p2[2] - p1[2]))
 
 		var displacement = this.currentDistance / this.vectorDistances[this.curSeg];
 		this.scene.translate((p2[0] - p1[0]) * displacement, (p2[1] - p1[1]) * displacement, (p2[2] - p1[2]) * displacement);
