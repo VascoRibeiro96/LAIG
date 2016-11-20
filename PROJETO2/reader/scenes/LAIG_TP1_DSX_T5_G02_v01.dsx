@@ -162,13 +162,15 @@
 
     <animations>
 
-        <animation id="testeAnimation" span="4" type="linear">
+        <animation id="tableAnimation" span="4" type="linear">
             <controlpoint xx="1" yy="1" zz="1" />
             <controlpoint xx="3" yy="1" zz="1" />
             <controlpoint xx="2" yy="3" zz="2" />
         </animation>
 
-        <animation id="testeCircularAnimation" span="9" type="circular" centerx="0" centery="0" centerz="0" radius="0.2" startang="0" rotang="2060" />
+        <animation id="globeAnimation" span="2.5" type="circular" centerx="0" centery="0" centerz="0" radius="0.1" startang="0" rotang="2060" perpetual="true" />
+
+        <animation id="treeAnimation" span="4" type="circular" centerx="0" centery="0" centerz="0" radius="0.5" startang="0" rotang="720" perpetual="false" />
 
     </animations>
  
@@ -264,7 +266,7 @@
             </transformation>
 
             <animation>
-                <animationref id="testeAnimation"/>
+                <animationref id="tableAnimation"/>
             </animation>
 
             <materials>
@@ -418,7 +420,7 @@
             </transformation>
 
             <animation>
-                <animationref id="testeCircularAnimation"/>
+                <animationref id="globeAnimation"/>
             </animation>
 
             <materials>
@@ -521,6 +523,10 @@
 				<scale x="3" y="3" z="3" />
 				<rotate axis="y" angle="70" />
             </transformation>
+
+            <animation>
+                <animationref id="treeAnimation"/>
+            </animation>
 
             <materials>
                 <material id="inherit"  />

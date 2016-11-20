@@ -755,10 +755,13 @@ MySceneGraph.prototype.parseCircularAnimation = function(animation, span, id) {
 		var radius = this.reader.getFloat(animation, 'radius', true);
         var startang = this.reader.getFloat(animation, 'startang', true);
 		var rotang = this.reader.getFloat(animation, 'rotang', true);
-	
+		var perpetual = this.reader.getBoolean(animation, 'perpetual', true);
+
+		if(perpetual == null)
+			perpetual = false;
         
     
-    this.animations[id] = new CircularAnimation(this.scene, span, center, radius, startang,rotang);
+    this.animations[id] = new CircularAnimation(this.scene, span, center, radius, startang, rotang, perpetual);
  
 }
 
