@@ -87,11 +87,15 @@ Component.prototype.display = function(parent, elaspedTime) {
 
     this.material.apply();
 
-    for(let animation of this.animations)
-        animation.apply(elaspedTime);   
+
+
+    for(var i = 0; i < this.animations.length; i++){
+        this.animations[i].apply(elaspedTime);   
+        if(!this.animations[i].done)
+            break;
+    }
 
     for (let child of this.children) {
- 
         this.material.apply();
         child.display(this, elaspedTime);
     }

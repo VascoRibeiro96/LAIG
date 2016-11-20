@@ -66,7 +66,9 @@ LinearAnimation.prototype.apply = function(span) {
 			this.currentDistance = 0;
 		}
 	}
-
+	else
+		this.done = true;
+	
 	this.scene.rotate(this.rotationAngle, 0, 1, 0);
 
 }

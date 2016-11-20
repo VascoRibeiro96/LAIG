@@ -28,8 +28,10 @@ CircularAnimation.prototype.apply = function(span){
 	this.curAng += (this.velocity * span);
 
 	if(!this.perpetual)
-		if(this.curAng > this.rotAng)
+		if(this.curAng > this.rotAng){
 			this.curAng = this.rotAng;
+			this.done = true;
+		}
 
 	this.scene.rotate(this.curAng * Math.PI/180,0,1,0);
 	this.scene.translate(this.radius,0,0);
