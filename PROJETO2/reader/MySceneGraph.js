@@ -609,8 +609,7 @@ MySceneGraph.prototype.parsePrimitives = function(primitives) {
 							this.reader.getFloat(shape, 'dimX', true),
 							this.reader.getFloat(shape, 'dimY', true),
 							this.reader.getInteger(shape, 'partsX', true),
-							this.reader.getInteger(shape, 'partsY', true)
-							
+							this.reader.getInteger(shape, 'partsY', true)		
 					);
 				break;
 			case 'patch':
@@ -620,15 +619,15 @@ MySceneGraph.prototype.parsePrimitives = function(primitives) {
 						var partsU = this.reader.getInteger(shape, 'partsU', true);
 						var partsV = this.reader.getInteger(shape, 'partsV', true);
 						
-						var controlpoints;
+						var controlpoints = [];
 						
 						 for(var linear of shape.children){
 								var controlpoint = shape.getElementsByTagName('controlpoint')[0];
-								var xx = this.reader.getFloat(controlpoint, 'xx', true);
-								var yy = this.reader.getFloat(controlpoint, 'yy', true);
-								var zz = this.reader.getFloat(controlpoint, 'zz', true);
+								var x = this.reader.getFloat(controlpoint, 'x', true);
+								var y = this.reader.getFloat(controlpoint, 'y', true);
+								var z = this.reader.getFloat(controlpoint, 'z', true);
          
-								var tmpcontrol = [xx, yy, zz];
+								var tmpcontrol = [x, y, z];
 								controlpoints.push(tmpcontrol);
 		
 							}

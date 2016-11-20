@@ -202,6 +202,22 @@
             <torus inner="0.7" outer="1" slices="25" loops="4" />
         </primitive>
 
+        <primitive id="patch">
+            <patch orderU="2" orderV="1" partsU="10" partsV="10">
+                <controlpoint x="-1.5" y="-1.5" z="0" />
+                <controlpoint x="-1.5" y="1.5" z="0" />
+                <controlpoint x="0" y="-1.5" z="3" />
+                <controlpoint x="0" y="1.5" z="3" />
+                <controlpoint x="1.5" y="-1.5" z="0" />
+                <controlpoint x="1.5" y="1.5" z="0" />
+            </patch>
+        </primitive>
+
+        <primitive id="plane">
+            <plane dimX="1" dimY="1" partsX="10" partsY="10" />
+        </primitive>
+
+      
     </primitives>
 
 	
@@ -253,6 +269,7 @@
 				<componentref id="chandelier" />
 				<componentref id="clock" />
 				<componentref id="tree" />
+                <primitiveref id="plane" />
             </children>
 
         </component>
