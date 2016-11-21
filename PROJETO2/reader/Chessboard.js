@@ -14,6 +14,8 @@ function Chessboard(scene, du, dv, texture, su, sv, c1, c2, cs){
 
   this.mat = new CGFappearance(this.scene);
   this.mat.setTexture(this.texture);
+  this.texture.apply(this.mat);
+
 
   this.shader = new CGFshader(this.scene.gl, "shaders/board.vert", "shaders/board.frag");
   this.shader.setUniformsValues({du : this.du});
@@ -32,7 +34,6 @@ Chessboard.prototype.constructor = Chessboard;
 
 Chessboard.prototype.display = function(){
   this.scene.pushMatrix();
-  this.texture.apply(this.mat);
   this.mat.apply();
   this.scene.setActiveShader(this.shader);
   this.plane.display();

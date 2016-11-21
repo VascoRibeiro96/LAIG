@@ -1,5 +1,5 @@
 function Vehicle(scene){
-	CGFObject.call(this, scene);
+	CGFobject.call(this, scene);
 	this.scene = scene;
 	
 	//create controlPoints
@@ -12,6 +12,5 @@ Vehicle.prototype = Object.create(CGFobject.prototype);
 Vehicle.prototype.constructor = Vehicle;
 
 Vehicle.prototype.display = function(){
-	this.patch.display();
 };
 

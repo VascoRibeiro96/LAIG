@@ -170,9 +170,30 @@
             <controlpoint xx="2" yy="3" zz="2" />
         </animation>
 
+        <animation id="vehicle1" span="4" type="linear">
+            <controlpoint xx="1" yy="1" zz="1" />
+            <controlpoint xx="4" yy="1" zz="1" />
+            <controlpoint xx="1" yy="1" zz="1" />
+        </animation>
+
+        <animation id="vehicle2" span="3" type="circular" centerx="0" centery="0" centerz="0" radius="0.3" startang="0" rotang="720" perpetual="false" />
+
+        <animation id="vehicle3" span="4" type="linear">
+            <controlpoint xx="1" yy="1" zz="1" />
+            <controlpoint xx="1" yy="1" zz="5" />
+            <controlpoint xx="1" yy="1" zz="1" />
+            <controlpoint xx="5" yy="1" zz="5" />
+        </animation>
+
+        <animation id="vehicle4" span="4" type="linear">
+            <controlpoint xx="1" yy="1" zz="1" />
+            <controlpoint xx="3" yy="1" zz="1" />
+            <controlpoint xx="2" yy="3" zz="2" />
+        </animation>
+
         <animation id="globeAnimation" span="2.5" type="circular" centerx="0" centery="0" centerz="0" radius="0.1" startang="0" rotang="2060" perpetual="true" />
 
-        <animation id="treeAnimation" span="4" type="circular" centerx="0" centery="0" centerz="0" radius="0.5" startang="0" rotang="720" perpetual="false" />
+        <animation id="treeAnimation" span="4" type="circular" centerx="0" centery="0" centerz="0" radius="0.2" startang="0" rotang="720" perpetual="false" />
 
     </animations>
  
@@ -226,6 +247,10 @@
                 <cs r="1" g="0" b="0" a="1" />
             </chessboard>
         </primitive>
+
+        <primitive id="vehicle">
+            <vehicle />
+        </primitive>
       
     </primitives>
 
@@ -278,7 +303,9 @@
 				<componentref id="chandelier" />
 				<componentref id="clock" />
 				<componentref id="tree" />
+                <componentref id="vehicle" />
                 <primitiveref id="chessboard" />
+
             </children>
 
         </component>
@@ -566,6 +593,33 @@
 				<componentref id="face3" />
 				<componentref id="face4" />
 				<componentref id="star" />
+            </children>
+
+        </component>
+
+        <component id="vehicle">
+
+            <transformation>
+                <translate x="2" y="0" z="6" />
+                <scale x="3" y="3" z="3" />
+                <rotate axis="y" angle="70" />
+            </transformation>
+
+            <animation>
+                <animationref id="vehicle1"/>
+                <animationref id="vehicle2"/>
+                <animationref id="vehicle3"/>
+                <animationref id="vehicle4"/>
+            </animation>
+
+            <materials>
+                <material id="inherit"  />
+            </materials>
+
+            <texture id="chessboard" />
+
+            <children>
+                <primitiveref id="vehicle" />
             </children>
 
         </component>
