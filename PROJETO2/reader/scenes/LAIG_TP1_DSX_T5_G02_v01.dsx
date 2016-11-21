@@ -616,7 +616,7 @@
                 <material id="inherit"  />
             </materials>
 
-            <texture id="chessboard" />
+            <texture id="star" />
 
             <children>
                 <primitiveref id="vehicle" />
