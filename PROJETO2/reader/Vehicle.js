@@ -43,11 +43,6 @@ Vehicle.prototype.display = function(){
 	
 	this.body.display();
 	
-	this.scene.pushMatrix();
-	this.scene.rotate(Math.PI, 0,0,1);
-	this.body.display();
-	this.scene.popMatrix();
-	
 	this.XPTriangle.display();
 	this.XNTriangle.display();
 	
