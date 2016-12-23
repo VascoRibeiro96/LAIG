@@ -3,6 +3,7 @@
  * @constructor
  */
  function Queen(scene) {
+	  this.id = null;
  	CGFobject.call(this,scene);
 
 
@@ -15,6 +16,13 @@
  Queen.prototype = Object.create(CGFobject.prototype);
  Queen.prototype.constructor = Queen;
 
+ Queen.prototype.setId = function(id){
+  this.id = id;
+}
+ 
+ Queen.prototype.select = function(){
+  console.log("You selected a queen with id=" + this.id);
+}
  
  Queen.prototype.display = function() {
 

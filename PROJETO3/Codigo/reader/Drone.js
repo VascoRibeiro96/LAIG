@@ -3,6 +3,7 @@
  * @constructor
  */
  function Drone(scene) {
+	 this.id = null;
  	CGFobject.call(this,scene);
 
 
@@ -15,6 +16,13 @@
  Drone.prototype = Object.create(CGFobject.prototype);
  Drone.prototype.constructor = Drone;
 
+  Drone.prototype.setId = function(id){
+  this.id = id;
+}
+ 
+ Drone.prototype.select = function(){
+  console.log("You selected a queen with id=" + this.id);
+}
  
  Drone.prototype.display = function() {
 

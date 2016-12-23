@@ -299,12 +299,7 @@
                 <!-- "primitiveref", identificando outros -->
                 <!-- componentes ou primitivas -->
 				<componentref id="table" />
-				<componentref id="window" />
-				<componentref id="chandelier" />
 				<componentref id="clock" />
-				<componentref id="tree" />
-                <componentref id="vehicle" />
-                <primitiveref id="chessboard" />
 
             </children>
 
@@ -319,7 +314,6 @@
             </transformation>
 
             <animation>
-                <animationref id="tableAnimation"/>
             </animation>
 
             <materials>
@@ -339,9 +333,6 @@
 				<componentref id="leg3" />
 				<componentref id="leg4" />
 				<componentref id="top" />
-				<componentref id="earth" />
-				<componentref id="notebook" />
-				<componentref id="pencil" />
             </children>
 
         </component>
@@ -465,89 +456,6 @@
 
         </component>
 		
-		<component id="earth">
-
-            <transformation>
-				<translate x="-1" y="2.5" z="-0.5" />
-				<scale x="0.5" y="0.5" z="0.5" />
-            </transformation>
-
-            <animation>
-                <animationref id="globeAnimation"/>
-            </animation>
-
-            <materials>
-                <material id="inherit"  />
-            </materials>
-
-            <texture id="earth" />
-
-            <children>
-                <primitiveref id="sphere" />
-            </children>
-
-        </component>
-		
-		<component id="notebook">
-
-            <transformation>
-				<translate x="0.6" y="2.1" z="0.5" />
-				<scale x="1.4" y="1.1" z="1" />
-				<rotate axis="x" angle="-90" />
-            </transformation>
-
-            <materials>
-                <material id="inherit"  />
-            </materials>
-
-            <texture id="notebook" />
-
-            <children>
-                <primitiveref id="rectangle" />
-            </children>
-
-        </component>
-		
-		<component id="pencil">
-
-            <transformation>
-				<translate x="0.9" y="2.1" z="-0.4" />
-				<scale x="0.4" y="0.7" z="0.4" />
-				<rotate axis="y" angle="160" />
-				<rotate axis="x" angle="-90" />
-            </transformation>
-
-            <materials>
-                <material id="inherit"  />
-            </materials>
-
-            <texture id="pencil" />
-
-            <children>
-                <primitiveref id="cylinder" />
-            </children>
-
-        </component>
-		
-		<component id="chandelier">
-
-            <transformation>
-				<translate x="6" y="5" z="2" />
-				<scale x="0.4" y="0.5" z="0.4" />
-				<rotate axis="x" angle="-90" />
-            </transformation>
-
-            <materials>
-                <material id="inherit"  />
-            </materials>
-
-            <texture id="chandelier" />
-
-            <children>
-                <primitiveref id="torus" />
-            </children>
-
-        </component>
 		
 		<component id="clock">
 
@@ -569,193 +477,6 @@
 
         </component>
 		
-		<component id="tree">
-
-            <transformation>
-				<translate x="2" y="0" z="6" />
-				<scale x="3" y="3" z="3" />
-				<rotate axis="y" angle="70" />
-            </transformation>
-
-            <animation>
-                <animationref id="treeAnimation"/>
-            </animation>
-
-            <materials>
-                <material id="inherit"  />
-            </materials>
-
-            <texture id="tree" />
-
-            <children>
-                <componentref id="face1" />
-				<componentref id="face2" />
-				<componentref id="face3" />
-				<componentref id="face4" />
-				<componentref id="star" />
-            </children>
-
-        </component>
-
-        <component id="vehicle">
-
-            <transformation>
-                <translate x="2" y="0" z="6" />
-                <scale x="3" y="3" z="3" />
-                <rotate axis="y" angle="70" />
-            </transformation>
-
-            <animation>
-                <animationref id="vehicle1"/>
-                <animationref id="vehicle2"/>
-                <animationref id="vehicle3"/>
-                <animationref id="vehicle4"/>
-            </animation>
-
-            <materials>
-                <material id="inherit"  />
-            </materials>
-
-            <texture id="star" />
-
-            <children>
-                <primitiveref id="vehicle" />
-            </children>
-
-        </component>
-		
-		<component id="face1">
-
-            <transformation>
-			    <rotate axis="x" angle="-90" />
-            </transformation>
-
-            <materials>
-                <material id="inherit"  />
-            </materials>
-
-            <texture id="inherit" />
-
-            <children>
-                <primitiveref id="triangle" />
-            </children>
-
-        </component>
-		
-		<component id="face2">
-
-            <transformation>
-				<rotate axis="y" angle="-45" />
-			    <rotate axis="x" angle="-90" />
-            </transformation>
-
-            <materials>
-                <material id="inherit"  />
-            </materials>
-
-            <texture id="inherit" />
-
-            <children>
-                <primitiveref id="triangle" />
-            </children>
-
-        </component>
-		
-		<component id="face3">
-
-            <transformation>
-				<rotate axis="y" angle="45" />
-			    <rotate axis="x" angle="-90" />
-            </transformation>
-
-            <materials>
-                <material id="inherit"  />
-            </materials>
-
-            <texture id="inherit" />
-
-            <children>
-                <primitiveref id="triangle" />
-            </children>
-
-        </component>
-		
-		<component id="face4">
-
-            <transformation>
-				<rotate axis="y" angle="-90" />
-			    <rotate axis="x" angle="-90" />
-            </transformation>
-
-            <materials>
-                <material id="inherit"  />
-            </materials>
-
-            <texture id="inherit" />
-
-            <children>
-                <primitiveref id="triangle" />
-            </children>
-
-        </component>
-		
-		<component id="star">
-
-            <transformation>
-				<translate x="0" y="1" z="0" />
-				<scale x="0.3" y="0.3" z="0.3" />
-            </transformation>
-
-            <materials>
-                <material id="inherit"  />
-            </materials>
-
-            <texture id="star" />
-
-            <children>
-                <componentref id="triangle1Star" />
-				<componentref id="triangle2Star" />
-            </children>
-
-        </component>
-		
-		<component id="triangle1Star">
-
-            <transformation>
-				<rotate axis="x" angle="-90" />
-            </transformation>
-
-            <materials>
-                <material id="inherit"  />
-            </materials>
-
-            <texture id="inherit" />
-
-            <children>
-                <primitiveref id="triangle" />
-            </children>
-
-        </component>
-		
-		<component id="triangle2Star">
-
-            <transformation>
-				<translate x="0" y="0.5" z="0" />
-				<rotate axis="z" angle="180" />
-				<rotate axis="x" angle="-90" />
-            </transformation>
-
-            <materials>
-                <material id="inherit"  />
-            </materials>
-
-            <texture id="inherit" />
-
-            <children>
-                <primitiveref id="triangle" />
-            </children>
-
-        </component>
     </components>
 
 </dsx>

@@ -71,11 +71,6 @@
 		
 		if(j > 0) {
 			this.indices.push(nI+j+1, nI, nI+j);
-			console.debug(nI + j + 1);
-			console.debug(nI + j);
-			console.debug(nI);
-			
-			console.debug("-------");
 		}
 		
 		if(j == this.slices-1)
@@ -85,7 +80,7 @@
 		xCoord = Math.cos(ang);
 		zCoord = Math.sin(ang);
 	}
-	
+	console.debug("Piramide Created");
  	this.primitiveType = this.scene.gl.TRIANGLES;
  	this.initGLBuffers();
  };

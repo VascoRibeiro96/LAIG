@@ -24,13 +24,37 @@ XMLscene.prototype.init = function(application) {
     this.gl.depthFunc(this.gl.LEQUAL);
 
     this.enableTextures(true);
-
+	
     this.lights = [];
     this.lightIDs = [];
     this.lightStatus = [];
     this.cameras = [];
     this.parentComponent;
+	
+	this.board = new Board(this);
+	
+	this.axis=new CGFaxis(this);
+	
+	this.pieces = [];
+	this.loadPieces();
+	
+	
+	
 };
+
+/**
+*Load Board Pieces
+*/
+XMLscene.prototype.loadPieces = function(){
+	for(var x=0; x<this.board.matrix.length;x++){
+    for(var y=0; y<this.board.matrix[x].length; y++){
+      this.pieces.push(this.board.matrix[x][y]);
+      if(this.board.pieces[x][y] != "")
+        this.pieces.push(this.board.pieces[x][y]);
+    }
+  }
+}
+
 
 /**
  * set the default scene appearance
@@ -124,4 +148,7 @@ XMLscene.prototype.display = function() {
 
         this.lights[i].update();
     }
+	console.log("12345")
+	this.board.display();
+	
 };

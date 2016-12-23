@@ -14,6 +14,9 @@ function Component(scene, id) {
     this.transformation = new Transformation(scene);
     this.animations = [];
     this.parent = null;
+	
+	
+	
 }
 
 Component.prototype.rotate = function(angle, x, y, z) {

@@ -3,6 +3,7 @@
  * @constructor
  */
  function Pawn(scene) {
+	  this.id = null;
  	CGFobject.call(this,scene);
 
 
@@ -15,6 +16,13 @@
  Pawn.prototype = Object.create(CGFobject.prototype);
  Pawn.prototype.constructor = Pawn;
 
+  Pawn.prototype.setId = function(id){
+  this.id = id;
+}
+ 
+ Pawn.prototype.select = function(){
+  console.log("You selected a queen with id=" + this.id);
+}
  
  Pawn.prototype.display = function() {
 
