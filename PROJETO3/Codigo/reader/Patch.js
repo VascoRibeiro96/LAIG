@@ -1,64 +1,47 @@
 
+ function Patch(scene, orderU, orderV, divX, divY, controlP) {
+    this.scene = scene;
 
-function Patch(scene, orderU, orderV, partsU, partsV, controlPoints){
+    var knots1 = this.getKnotsVector(orderU);
+  	var knots2 = this.getKnotsVector(orderV);
 
-	this.scene = scene;
-	this.orderU = orderU;
-	this.orderV = orderV;
-	this.partsU = partsU;
-	this.partsV = partsV;
-	this.controlPoints = controlPoints;
+    this.orderU = orderU;
+    this.orderV = orderV;
 
-	//Prepare knotsV and knotsU
-	var knotsU = [];
-	for (var i=0; i<=this.orderU; i++) {
-		knotsU.push(0);
-	}
-	for (var i=0; i<=this.orderU; i++) {
-		knotsU.push(1);
-	}
-	
-	var knotsV = [];
-	for (var i=0; i<=this.orderV; i++) {
-		knotsV.push(0);
-	}
-	for (var i=0; i<=this.orderV; i++) {
-		knotsV.push(1);
-	}
-	
-	//Prepare controlPoints
-	var vertex = 0;
-	this.controlVertexes = [];
-	for(var i = 0; i <= orderU; ++i) {
-		var temp = [];
-		for(var j = 0; j <= orderV; ++j) {
-			this.controlPoints[vertex].push(1);
-			temp.push(this.controlPoints[vertex++]);
-		}
-		this.controlVertexes.push(temp);
-	}
-	
-	//Create Surface
-	this.nurbsSurface = new CGFnurbsSurface(this.orderU, this.orderV, knotsU, knotsV, this.controlVertexes); 	
-	var nurbsSurface = this.nurbsSurface;
-	Points = function(u, v) {
-		return nurbsSurface.getPoint(u, v);
-	};
+    this.dX = divX;
+    this.dY = divY;
 
-	//Create Object
-	this.patch = new CGFnurbsObject(this.scene, Points, this.partsU, this.partsV);	
-	
-	
-};
-Patch.prototype = Object.create(CGFobject.prototype);
-Patch.prototype.constructor = Patch;
+    this.controlPoints = controlP;
+
+    var nurbsSurface = new CGFnurbsSurface(this.orderU, this.orderV, knots1, knots2, this.controlPoints);
+    getSurfacePoint = function(u, v){
+      return nurbsSurface.getPoint(u,v);
+
+    };
+
+    this.patch = new CGFnurbsObject(this.scene, getSurfacePoint, this.dX, this.dY);
+
+    /*var p = [[0, 0, 0], [10, 0, 0], [10, 10, 0]];
+    this.animation = new MyCircularAnimation(scene, "0", "circular", 10, 0, 0, 0, 0, 0, 90);*/
+
+  };
+
+  Patch.prototype = Object.create(CGFobject.prototype);
+  Patch.prototype.constructor = Patch;
+
+  Patch.prototype.getKnotsVector = function(degree){
+    var v = new Array();
+    for (var i=0; i<=degree; i++) {
+      v.push(0);
+    }
+    for (var i=0; i<=degree; i++) {
+      v.push(1);
+    }
+    return v;
+  }
 
 
-Patch.prototype.display = function ()
-{
-	this.patch.display();
-};
-
-
-
-
+  Patch.prototype.display = function(){
+    //this.animation.apply(span);
+    this.patch.display();
+  };

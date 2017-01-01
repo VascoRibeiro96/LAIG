@@ -1,8 +1,3 @@
-/**
-* Cube
-* @constructor
-*/
-
 function Cube(scene, width, height, depth) {
 
  CGFobject.call(this,scene);
@@ -16,9 +11,9 @@ function Cube(scene, width, height, depth) {
  this.height = height;
  this.depth = depth;
 
- this.square = new MyQuad(this.scene, -0.5, 0.5, 0.5, -0.5);
+ this.square = new Quad(this.scene, -0.5, 0.5, 0.5, -0.5);
 
- this.createInitialMatrixes();
+ this.createInitialMatrixes();   
 
 };
 

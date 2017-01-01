@@ -1,9 +1,9 @@
-function Chessboard(scene, du, dv, texture, su, sv, c1, c2, cs){
+function ChessBoard(scene, du, dv, textureid, su, sv, c1, c2, cs){
   CGFobject.call(this, scene);
   this.scene = scene;
   this.du = du;
   this.dv = dv;
-  this.texture = texture;
+  this.texture = textureid;
   this.su = su;
   this.sv = sv;
   this.c1 = vec4.fromValues(c1[0], c1[1], c1[2], c1[3]);
@@ -14,8 +14,6 @@ function Chessboard(scene, du, dv, texture, su, sv, c1, c2, cs){
 
   this.mat = new CGFappearance(this.scene);
   this.mat.setTexture(this.texture);
-  this.texture.apply(this.mat);
-
 
   this.shader = new CGFshader(this.scene.gl, "shaders/board.vert", "shaders/board.frag");
   this.shader.setUniformsValues({du : this.du});
@@ -29,14 +27,14 @@ function Chessboard(scene, du, dv, texture, su, sv, c1, c2, cs){
   this.initBuffers();
 };
 
-Chessboard.prototype = Object.create(CGFobject.prototype);
-Chessboard.prototype.constructor = Chessboard;
+ChessBoard.prototype = Object.create(CGFobject.prototype);
+ChessBoard.prototype.constructor = ChessBoard;
 
-Chessboard.prototype.display = function(){
+ChessBoard.prototype.display = function(){
   this.scene.pushMatrix();
   this.mat.apply();
   this.scene.setActiveShader(this.shader);
-  this.plane.display();
+    this.plane.display();
   this.scene.setActiveShader(this.scene.defaultShader);
   this.scene.popMatrix();
 }

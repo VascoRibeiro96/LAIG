@@ -1,8 +1,4 @@
-/**
- * BoardCell
- * @param gl {WebGLRenderingContext}
- * @constructor
- */
+
 function BoardCell(scene, x, y, object, prevColor) {
 	CGFobject.call(this, scene);
 
@@ -20,16 +16,18 @@ function BoardCell(scene, x, y, object, prevColor) {
   this.appearance = new CGFappearance(this.scene);
 
   if(prevColor == "white"){
-    this.appearance.setAmbient(1, 1, 0, 1);
-    this.appearance.setDiffuse(1, 1, 0, 1);
-    this.appearance.setSpecular(1, 1, 0, 1);
+    this.appearance.setAmbient(1, 1, 1, 1);
+    this.appearance.setDiffuse(1, 1, 1, 1);
+    this.appearance.setSpecular(1, 1, 1, 1);
   }
 
-	mat4.translate(this.transfMat, this.transfMat, [posx, 0, posy]);
+  mat4.translate(this.transfMat, this.transfMat, [posx, 0, posy]);
 
 	this.originalTransfMat = mat4.create();
 	mat4.identity(this.originalTransfMat);
 	mat4.copy(this.originalTransfMat, this.transfMat);
+
+	this.type = "empty";
 };
 
 BoardCell.prototype = Object.create(CGFobject.prototype);
@@ -40,12 +38,12 @@ BoardCell.prototype.setId = function(id){
 }
 
 BoardCell.prototype.select = function(){
-	console.log("You selected a board cell with id= " + this.id + "in the position x=" + this.x + " y=" + this.y);
+	console.log("You selected a board cell in position: " + this.x + "/" + this.y);
 }
 
 BoardCell.prototype.display = function(){
-	this.scene.pushMatrix();
-	this.appearance.apply();
+  this.scene.pushMatrix();
+  this.appearance.apply();
 	this.scene.multMatrix(this.transfMat);
 	this.cell.display();
 	this.scene.popMatrix();

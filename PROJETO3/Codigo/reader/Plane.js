@@ -1,25 +1,48 @@
-function Plane(scene, dimX, dimY, partsX, partsY){
-	
-	CGFobject.call(this,scene);
-	this.scene = scene;
-	this.dimX = dimX;
-	this.dimY = dimY;
-	this.partsX = partsX;
-	this.partsY = partsY;
-		
-	this.controlPoints = [
-                    [-this.dimX/2,-this.dimY/2,0],
-                    [-this.dimX/2,this.dimY/2,0],
-                    [this.dimX/2,-this.dimY/2,0],
-                    [this.dimX/2,this.dimY/2,0]
-                    ];
-					
-	this.plane = new Patch(this.scene, 1 , 1, this.partsX, this.partsY, this.controlPoints);
-}
 
-Plane.prototype = Object.create(CGFnurbsObject.prototype);
-Plane.prototype.constructor = Plane;
+ function Plane(scene, divX, divY, partsX, partsY) {
+    this.scene = scene;
 
-Plane.prototype.display = function(){
-	this.plane.display();
-}
+    this.dX = divX;
+    this.dY = divY;
+
+    var knots1 = this.getKnotsVector(1);
+  	var knots2 = this.getKnotsVector(1);
+
+    this.controlPoints = [
+                            [
+                              [-this.dX/2, -this.dY/2, 0, 1],
+                              [-this.dX/2, this.dY/2, 0, 1]
+                            ],
+
+                            [
+                              [this.dX/2, -this.dY/2, 0, 1],
+                              [this.dX/2, this.dY/2, 0, 1]
+                            ]
+    ];
+
+    var nurbsSurface = new CGFnurbsSurface(1, 1, knots1, knots2, this.controlPoints);
+    getSurfacePoint = function(u, v){
+      return nurbsSurface.getPoint(u,v);
+    };
+
+    this.plane = new CGFnurbsObject(this.scene, getSurfacePoint, partsX, partsY);
+
+  };
+
+  Plane.prototype = Object.create(CGFobject.prototype);
+  Plane.prototype.constructor = Plane;
+
+  Plane.prototype.getKnotsVector = function(degree){
+    var v = new Array();
+    for (var i=0; i<=degree; i++) {
+      v.push(0);
+    }
+    for (var i=0; i<=degree; i++) {
+      v.push(1);
+    }
+    return v;
+  }
+
+  Plane.prototype.display = function(){
+    this.plane.display();
+  };

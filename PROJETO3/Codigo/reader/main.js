@@ -11,23 +11,17 @@ function getUrlVars() {
     return vars;
 }
 
-serialInclude(['../lib/CGF.js', 'XMLscene.js', 'MySceneGraph.js',
-	'Rectangle.js', 'Triangle.js', 'Circle.js', 'Cylinder.js', 'Sphere.js',
-	'Torus.js', 'Component.js', 'Transformation.js', 'Texture.js',
-	'Interface.js',
-	'Animation.js', 'LinearAnimation.js', 'CircularAnimation.js',
-	'Plane.js', 'Patch.js', 'Vehicle.js', 'Chessboard.js',
-	'Drone.js', 'Queen.js', 'Pawn.js', 'Board.js', 'BoardCell.js', 'Cube.js', 'MyQuad.js', 'Piramide.js',
-
+serialInclude(['../lib/CGF.js', 'XMLscene.js', 'MySceneGraph.js', 'Quad.js', 'Node.js', 'Circle.js', 'Cylinder.js', 'Prism.js', 'Sphere.js',
+'UnitCubeQuad.js', 'Utilities.js', 'Triangle.js', 'Torus.js', 'Interface.js', 'Plane.js', 'Patch.js', 'Animation.js', 'LinearAnimation.js', 'CircularAnimation.js',
+'ChessBoard.js', 'CylinderBase.js', 'Cube.js', 'CylinderSurface.js', 'Queen.js', 'Drone.js', 'Pawn.js', 'Board.js', 'BoardCell.js', '../Interface/Communication.js',
+'History.js', 'Move.js', 'Piece.js',
 
 main=function()
 {
 	// Standard application, scene and interface setup
     var app = new CGFapplication(document.body);
-    var myScene = new XMLscene();
-    var myInterface = new Interface(myScene);
-
-    myScene.interface = myInterface;
+    var myInterface = new Interface();
+    var myScene = new XMLscene(myInterface);
 
     app.init();
 
@@ -39,7 +33,7 @@ main=function()
 	// get file name provided in URL, e.g. http://localhost/myproj/?file=myfile.xml
 	// or use "demo.xml" as default (assumes files in subfolder "scenes", check MySceneGraph constructor)
 
-	var filename=getUrlVars()['file'] || "LAIG_TP1_DSX_T5_G02_v01.dsx";
+	var filename=getUrlVars()['file'] || "DemoScene.xml";
 
 	// create and load graph, and associate it to scene.
 	// Check console for loading errors

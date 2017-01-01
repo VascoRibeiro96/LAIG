@@ -1,9 +1,5 @@
-/**
- * MyObject
- * @param gl {WebGLRenderingContext}
- * @constructor
- */
- function MyQuad(scene, minX, minY, maxX, maxY) {
+
+ function Quad(scene, minX, minY, maxX, maxY) {
   	CGFobject.call(this,scene);
 
    this.minS = 0;
@@ -19,10 +15,10 @@
   	this.initBuffers();
   };
 
-  MyQuad.prototype = Object.create(CGFobject.prototype);
-  MyQuad.prototype.constructor = MyQuad;
+  Quad.prototype = Object.create(CGFobject.prototype);
+  Quad.prototype.constructor = Quad;
 
-  MyQuad.prototype.initBuffers = function() {
+  Quad.prototype.initBuffers = function() {
    this.vertices = [ this.minX, this.minY, 0,
                      this.maxX, this.minY, 0,
                      this.minX, this.maxY, 0,

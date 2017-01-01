@@ -1,18 +1,14 @@
-/**
- * Torus
- * @constructor
- */
+
 function Torus(scene, inner, outer, slices, loops) {
     CGFobject.call(this, scene);
 
-    this.inner = inner;
-    this.outer = outer;
+    this.r = inner;
+    this.R = outer;
     this.slices = slices;
-    this.loops = loops;
+    this.stacks = loops;
 
     this.initBuffers();
 };
-
 
 Torus.prototype = Object.create(CGFobject.prototype);
 Torus.prototype.constructor = Torus;
@@ -20,48 +16,43 @@ Torus.prototype.constructor = Torus;
 Torus.prototype.initBuffers = function() {
 
     this.vertices = [];
-    this.normals = [];
     this.indices = [];
+    this.normals = [];
     this.texCoords = [];
-	
 
-    var angslices = 2 * Math.PI / this.slices;
-    var angloops = 2 * Math.PI / this.loops;
-    var idvertices = 0;
+    for (var stack = 0; stack <= this.stacks; stack++) {
+        var theta = stack * 2 * Math.PI / this.stacks;
+        var sinTheta = Math.sin(theta);
+        var cosTheta = Math.cos(theta);
 
-    for (var i = 0; i <= this.slices; i++) {
-        for (var j = 0; j <= this.loops; j++) {
+        for (var slice = 0; slice <= this.slices; slice++) {
+            var phi = slice * 2 * Math.PI / this.slices;
+            var sinPhi = Math.sin(phi);
+            var cosPhi = Math.cos(phi);
 
-            this.vertices.push(
-					(this.outer + this.inner * Math.cos(j * angloops)) * Math.cos(i * angslices),
-					(this.outer + this.inner * Math.cos(j * angloops)) * Math.sin(i * angslices),
-					this.inner * Math.sin(j * angslices));
-					
-					
-            this.normals.push(
-					(this.inner * Math.cos(j * angloops)) * Math.cos(i * angslices),
-					(this.inner * Math.cos(j * angloops)) * Math.sin(i * angslices),
-					this.inner * Math.sin(j * angslices));
+            var x = (this.R + (this.r * cosTheta)) * cosPhi;
+            var y = (this.R + (this.r * cosTheta)) * sinPhi
+            var z = this.r * sinTheta;
+            var s = 1 - (stack / this.stacks);
+            var t = 1 - (slice / this.slices);
 
-            var xCoord = Math.acos((this.outer + this.inner * Math.cos(j * angloops)) * Math.cos(i * angslices) / this.inner) / (2 * Math.PI);
-            var yCoord = 2 * Math.PI * Math.acos((this.inner * Math.sin(j * angslices)) / (this.inner + this.outer * Math.cos(2 * Math.PI * xCoord)));
-
-            yCoord = i / this.slices;
-            xCoord = (j % (this.loops + 1)) / this.slices;
-
-            this.texCoords.push(xCoord, yCoord);
-
-            idvertices++;
-
-            if (i > 0 && j > 0) {
-                this.indices.push(idvertices - this.loops - 2, idvertices - 2, idvertices - 1);
-                this.indices.push(idvertices - 2, idvertices - this.loops - 2, idvertices - this.loops - 3);
-            }
+            this.vertices.push(x, y, z);
+            this.normals.push(x, y, z);
+            this.texCoords.push(s, t);
         }
     }
 
-   
+    for (var stack = 0; stack < this.stacks; stack++) {
+        for (var slice = 0; slice < this.slices; slice++) {
+            var first = (stack * (this.slices + 1)) + slice;
+            var second = first + this.slices + 1;
+
+            this.indices.push(first, second + 1, second);
+            this.indices.push(first, first + 1, second + 1);
+        }
+    }
+
+
     this.primitiveType = this.scene.gl.TRIANGLES;
     this.initGLBuffers();
-
-}
+};
